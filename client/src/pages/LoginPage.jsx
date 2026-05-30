@@ -84,9 +84,19 @@ export default function LoginPage() {
 
                 {/* Quick Login for Demo */}
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--border-color)' }}>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 12 }}>
-                        DEMO QUICK LOGIN
-                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                        <span style={{ 
+                            fontSize: '0.75rem', 
+                            fontWeight: 700, 
+                            color: 'var(--accent-blue)', 
+                            background: 'rgba(59, 130, 246, 0.15)', 
+                            padding: '4px 12px', 
+                            borderRadius: '100px', 
+                            letterSpacing: '1px' 
+                        }}>
+                            DEMO QUICK LOGIN
+                        </span>
+                    </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                         <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => quickLogin('arjun@trustedge.com')}>
                             👤 Customer
