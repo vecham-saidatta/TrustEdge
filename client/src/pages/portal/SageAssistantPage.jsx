@@ -510,68 +510,8 @@ export default function SageAssistantPage() {
 
     return (
         <div className="fade-in" style={{ height: 'calc(100vh - 100px)', display: 'flex', gap: 0 }}>
-            {/* LEFT PANEL — Conversation History */}
-            <div style={{
-                width: historyCollapsed ? 60 : 320,
-                minWidth: historyCollapsed ? 60 : 320,
-                background: 'var(--bg-secondary)',
-                borderRight: '1px solid var(--border-color)',
-                display: 'flex', flexDirection: 'column',
-                borderRadius: '16px 0 0 16px',
-                transition: 'all 0.3s ease', overflow: 'hidden',
-            }}>
-                {!historyCollapsed && (
-                    <>
-                        <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
-                                    <MessageSquare size={18} style={{ color: 'var(--accent-blue)' }} />
-                                    {t.sageAssistantTitle || (customerLang === 'HI' ? 'इतिहास' : 'History')}
-                                </h3>
-                                <button onClick={clearChat} className="btn btn-sm" style={{
-                                    padding: '6px 10px', fontSize: '0.72rem',
-                                    background: 'rgba(239,68,68,0.1)', color: '#ef4444',
-                                    border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8,
-                                    cursor: 'pointer', fontFamily: 'inherit',
-                                }}>
-                                    {customerLang === 'HI' ? 'साफ़ करें' : 'Clear'}
-                                </button>
-                            </div>
-
-
-                        </div>
-
-                        {/* Quick starters when chat is empty */}
-                        {messages.length === 0 && (
-                            <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
-                                <div style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: 8 }}>
-                                    {customerLang === 'HI' ? 'त्वरित शुरुआत' : 'Quick Start'}
-                                </div>
-                                {TOPIC_QUICKSTARTS.map(t => (
-                                    <button key={t.label} onClick={() => { setInput(t.prompt); setTopic(t.topic); inputRef.current?.focus(); }} style={{
-                                        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-                                        padding: '10px 12px', background: 'none', border: '1px solid var(--border-color)',
-                                        borderRadius: 10, cursor: 'pointer', marginBottom: 6,
-                                        color: 'var(--text-secondary)', fontSize: '0.8rem', fontFamily: 'inherit',
-                                        textAlign: 'left', transition: 'all 0.2s',
-                                    }}
-                                        onMouseEnter={e => { e.currentTarget.style.borderColor = t.color; e.currentTarget.style.background = 'var(--bg-card)'; }}
-                                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.background = 'none'; }}
-                                    >
-                                        <t.icon size={16} style={{ color: t.color, flexShrink: 0 }} />
-                                        <span>{getQuickstartPrompt(t.prompt)}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-
-
-                    </>
-                )}
-            </div>
-
-            {/* RIGHT PANEL — Active Chat */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-card)', borderRadius: '0 16px 16px 0', border: '1px solid var(--border-color)', borderLeft: 'none' }}>
+            {/* Active Chat */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-card)', borderRadius: 16, border: '1px solid var(--border-color)' }}>
                 {/* Chat Header */}
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -588,6 +528,14 @@ export default function SageAssistantPage() {
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <button onClick={clearChat} className="btn btn-sm" style={{
+                            padding: '6px 10px', fontSize: '0.72rem',
+                            background: 'rgba(239,68,68,0.1)', color: '#ef4444',
+                            border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8,
+                            cursor: 'pointer', fontFamily: 'inherit',
+                        }}>
+                            {customerLang === 'HI' ? 'साफ़ करें' : 'Clear'}
+                        </button>
                         {/* Language Toggle */}
                         <div style={{ display: 'flex', background: 'var(--bg-secondary)', borderRadius: 8, padding: 2 }}>
                             {['EN', 'हिंदी'].map(lang => (
