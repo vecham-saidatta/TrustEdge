@@ -124,6 +124,8 @@ export default function Customer360Page() {
   const [selectedCustomer, setSelectedCustomer] = useState(customerData);
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [challengeReason, setChallengeReason] = useState('');
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState('');
   const [txnFilter, setTxnFilter] = useState('ALL');
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -540,9 +542,9 @@ export default function Customer360Page() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button className="action-btn primary"><ClipboardList size={14} /> Create Case</button>
-              <button className="action-btn"><Send size={14} /> Send Outreach</button>
-              <button className="action-btn"><MessageSquare size={14} /> SAGE History</button>
+              <button className="action-btn primary" onClick={() => { setComingSoonFeature('Create Case'); setShowComingSoonModal(true); }}><ClipboardList size={14} /> Create Case</button>
+              <button className="action-btn" onClick={() => { setComingSoonFeature('Send Outreach'); setShowComingSoonModal(true); }}><Send size={14} /> Send Outreach</button>
+              <button className="action-btn" onClick={() => { setComingSoonFeature('SAGE History'); setShowComingSoonModal(true); }}><MessageSquare size={14} /> SAGE History</button>
             </div>
           </div>
         </div>
@@ -747,8 +749,8 @@ export default function Customer360Page() {
                 <button className="action-btn" onClick={() => setShowChallengeModal(true)}>
                   <Shield size={14} /> Challenge This Score
                 </button>
-                <button className="action-btn"><Eye size={14} /> View Full Signal History</button>
-                <button className="action-btn"><Zap size={14} /> Run What-If</button>
+                <button className="action-btn" onClick={() => { setComingSoonFeature('View Full Signal History'); setShowComingSoonModal(true); }}><Eye size={14} /> View Full Signal History</button>
+                <button className="action-btn" onClick={() => { setComingSoonFeature('Run What-If'); setShowComingSoonModal(true); }}><Zap size={14} /> Run What-If</button>
               </div>
             </div>
 
@@ -845,7 +847,7 @@ export default function Customer360Page() {
           <div className="admin-panel" style={{ marginBottom: 24 }}>
             <div className="admin-panel-header">
               <span className="admin-panel-title"><ClipboardList size={16} /> Retention Cases</span>
-              <button className="action-btn primary"><ClipboardList size={14} /> Create New Case</button>
+              <button className="action-btn primary" onClick={() => { setComingSoonFeature('Create New Case'); setShowComingSoonModal(true); }}><ClipboardList size={14} /> Create New Case</button>
             </div>
             <div className="table-container">
               <table className="table">
@@ -878,7 +880,7 @@ export default function Customer360Page() {
                         {c.aumAtRisk > 0 ? `₹${(c.aumAtRisk / 100000).toFixed(1)}L` : '—'}
                       </td>
                       <td>
-                        <button className="action-btn" style={{ fontSize: '0.72rem' }}><Eye size={12} /> View</button>
+                        <button className="action-btn" style={{ fontSize: '0.72rem' }} onClick={() => { setComingSoonFeature('View Case Details'); setShowComingSoonModal(true); }}><Eye size={12} /> View</button>
                       </td>
                     </tr>
                   ))}
@@ -973,6 +975,34 @@ export default function Customer360Page() {
             <div className="admin-modal-footer">
               <button className="btn btn-secondary" onClick={() => setShowChallengeModal(false)}>Cancel</button>
               <button className="action-btn primary">Submit Challenge</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Coming Soon Modal */}
+      {showComingSoonModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowComingSoonModal(false)}>
+          <div className="admin-modal admin-modal-md" onClick={e => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h3 className="admin-modal-title">Feature Coming Soon</h3>
+              <button className="admin-modal-close" onClick={() => setShowComingSoonModal(false)}><X size={16} /></button>
+            </div>
+            <div className="admin-modal-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%', background: 'rgba(59,130,246,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
+                color: 'var(--accent-blue)'
+              }}>
+                <Clock size={32} />
+              </div>
+              <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>{comingSoonFeature} is under construction</h4>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: 300, margin: '0 auto' }}>
+                We're currently building this feature. It will be available in an upcoming release of the TrustEdge Admin Portal.
+              </p>
+            </div>
+            <div className="admin-modal-footer" style={{ justifyContent: 'center' }}>
+              <button className="action-btn primary" onClick={() => setShowComingSoonModal(false)}>Got it</button>
             </div>
           </div>
         </div>
