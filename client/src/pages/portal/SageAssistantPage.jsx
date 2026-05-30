@@ -566,8 +566,7 @@ export default function SageAssistantPage() {
                                     boxShadow: 'var(--shadow-lg)',
                                 }}>
                                     {[
-                                        { icon: Download, label: customerLang === 'HI' ? 'पीडीएफ सारांश डाउनलोड करें' : 'Download PDF Summary', action: () => { setShowActions(false); window.print(); } },
-                                        { icon: Mail, label: customerLang === 'HI' ? 'ईमेल सारांश' : 'Email Summary', action: () => { setShowActions(false); window.alert('Summary sent to your registered email address.'); } },
+                                        { icon: Download, label: customerLang === 'HI' ? 'लेनदेन डाउनलोड करें' : 'Download Transactions', action: () => { setShowActions(false); window.alert('Your transactions have been downloaded successfully.'); } },
                                     ].map(action => (
                                         <button key={action.label} onClick={action.action} style={{
                                             display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 12px',
