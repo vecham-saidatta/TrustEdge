@@ -862,21 +862,20 @@ export default function PlaceholderWrapper({ moduleKey, moduleName, children }) 
           position: 'fixed', bottom: 28, right: 28, zIndex: 90,
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '12px 22px', borderRadius: 'var(--radius-xl)',
-          background: 'rgba(26, 32, 53, 0.85)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(59,130,246,0.3)',
-          color: 'var(--text-primary)', fontSize: '0.82rem', fontWeight: 600,
+          background: '#3b82f6',
+          border: 'none',
+          color: '#ffffff', fontSize: '0.85rem', fontWeight: 700,
           cursor: 'pointer', transition: 'all 0.25s ease',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.4), 0 0 12px rgba(59,130,246,0.15)',
+          boxShadow: '0 4px 20px rgba(59, 130, 246, 0.5), 0 0 12px rgba(59, 130, 246, 0.3)',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.borderColor = '#3b82f6';
-          e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.5), 0 0 20px rgba(59,130,246,0.3)';
+          e.currentTarget.style.background = '#2563eb';
+          e.currentTarget.style.boxShadow = '0 6px 24px rgba(59, 130, 246, 0.6), 0 0 20px rgba(59, 130, 246, 0.4)';
           e.currentTarget.style.transform = 'translateY(-2px)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'rgba(59,130,246,0.3)';
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), 0 0 12px rgba(59,130,246,0.15)';
+          e.currentTarget.style.background = '#3b82f6';
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(59, 130, 246, 0.5), 0 0 12px rgba(59, 130, 246, 0.3)';
           e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
