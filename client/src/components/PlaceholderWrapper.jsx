@@ -269,6 +269,38 @@ const MODULE_REGISTRY = {
     chartType: 'accuracy-trend',
     chartData: { baseline: [84.1, 84.3, 84.2, 84.5, 84.4, 84.3, 84.6, 84.5], reinforced: [84.1, 85.2, 86.1, 87.3, 88.0, 89.1, 90.4, 91.2], labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'], title: 'Model Accuracy — Baseline vs Reinforced (%)' },
   },
+
+  'customer-360': {
+    status: 'Under Development', statusColor: '#f59e0b',
+    icon: UserCheck, iconColor: '#3b82f6',
+    description: 'Unified 360-degree customer intelligence portal combining real-time core banking data, predictive churn models, SAGE conversation analytics, and personalized retention action recommendations.',
+    features: [
+      { icon: PieChart, title: 'Comprehensive Financial Snapshot', desc: 'Real-time aggregation of AUM, liabilities, and product holdings across all business units' },
+      { icon: Activity, title: 'Behavioral Risk Scoring', desc: 'Live ML-driven health and contagion risk scoring with historical trend analysis' },
+      { icon: MessageSquare, title: 'Omnichannel Interaction History', desc: 'Unified timeline of branch visits, app usage, and support calls with NLP sentiment extraction' },
+      { icon: Bot, title: 'SAGE AI Conversation Analytics', desc: 'Direct access to AI agent chat transcripts with automated distress and intent tagging' },
+      { icon: Target, title: 'Next-Best-Action Engine', desc: 'PPO-optimized intervention recommendations tailored to individual customer risk profiles' },
+    ],
+    metrics: [
+      { label: 'Active Profiles', value: '42.8K', change: 'Synced with Core', changeType: 'neutral', color: '#3b82f6' },
+      { label: 'Avg Health Score', value: '0.82', change: '+0.03 vs last month', changeType: 'up', color: '#10b981' },
+      { label: 'Data Latency', value: '<2s', change: 'Real-time stream active', changeType: 'neutral', color: '#8b5cf6' },
+      { label: 'At-Risk Detected', value: '1,492', change: '-45 post-intervention', changeType: 'down', color: '#f59e0b' },
+    ],
+    pipeline: [
+      { stage: 'UI Wireframes', status: 'done', label: 'Completed' },
+      { stage: 'Front-End Shell', status: 'done', label: 'Completed' },
+      { stage: 'Data Ingestion APIs', status: 'active', label: 'In Progress' },
+      { stage: 'Advanced ML Engine', status: 'planned', label: 'Q3 2026' },
+    ],
+    roadmap: [
+      { quarter: 'Q2 2026', milestone: 'Customer 360 UI with mock interaction data' },
+      { quarter: 'Q3 2026', milestone: 'Live integration with core banking and CRM systems' },
+      { quarter: 'Q4 2026', milestone: 'Full Next-Best-Action ML rollout and anomaly detection' },
+    ],
+    chartType: 'risk-distribution',
+    chartData: { buckets: [{ range: 'Growth', count: 18450, color: '#10b981' }, { range: 'Stable', count: 12100, color: '#3b82f6' }, { range: 'Dormant', count: 8200, color: '#f59e0b' }, { range: 'At Risk', count: 4141, color: '#ef4444' }], title: 'Portfolio Health Level Distribution' },
+  },
 };
 
 // ── Shared inline style constants ──────────────────────────────────

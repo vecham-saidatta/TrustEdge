@@ -296,7 +296,7 @@ function AppRoutes() {
         <Route path="/admin/pulse" element={<AdminRoute><PlaceholderWrapper moduleKey="pulse" moduleName="PULSE Feedback"><PulseDashboardPage /></PlaceholderWrapper></AdminRoute>} />
 
         {/* 👥 Customer 360 — Individual customer journey view */}
-        <Route path="/admin/customer-360" element={<AdminRoute><Customer360Page /></AdminRoute>} />
+        <Route path="/admin/customer-360" element={<AdminRoute><PlaceholderWrapper moduleKey="customer-360" moduleName="Customer 360"><Customer360Page /></PlaceholderWrapper></AdminRoute>} />
 
         {/* 👔 RM Operations — RM performance & portfolio health */}
         <Route path="/admin/rm-operations" element={<AdminRoute><PlaceholderWrapper moduleKey="rm-operations" moduleName="RM Operations"><RMOperationsPage /></PlaceholderWrapper></AdminRoute>} />
