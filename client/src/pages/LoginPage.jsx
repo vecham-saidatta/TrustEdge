@@ -88,11 +88,11 @@ export default function LoginPage() {
                         DEMO QUICK LOGIN
                     </p>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => quickLogin('arjun@lifeline.com')}>
+                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => quickLogin('arjun@trustedge.com')}>
                             👤 Customer
                         </button>
 
-                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => quickLogin('admin@lifeline.com')}>
+                        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => quickLogin('admin@trustedge.com')}>
                             ⚙️ Admin
                         </button>
                     </div>

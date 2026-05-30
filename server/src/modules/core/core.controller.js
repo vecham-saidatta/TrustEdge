@@ -1,5 +1,5 @@
 /**
- * LIFELINE CORE — Controller
+ * TRUSTEDGE CORE — Controller
  */
 
 const coreService = require('./core.service');

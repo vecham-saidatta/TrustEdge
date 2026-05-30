@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Auth Service
+ * TRUSTEDGE — Auth Service
  * 
  * Contains all business logic for authentication:
  * - Register (hash password, create user)

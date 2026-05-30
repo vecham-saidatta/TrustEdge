@@ -7,7 +7,7 @@
 const EventEmitter = require('events');
 const logger = require('../config/logger');
 
-class LifelineEventBus extends EventEmitter {
+class TrustEdgeEventBus extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(50);
@@ -20,7 +20,7 @@ class LifelineEventBus extends EventEmitter {
 }
 
 // Singleton
-const eventBus = new LifelineEventBus();
+const eventBus = new TrustEdgeEventBus();
 
 // ── Event Constants ─────────────────────────────────
 const EVENTS = {

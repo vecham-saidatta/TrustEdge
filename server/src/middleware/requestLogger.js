@@ -1,5 +1,5 @@
 /**
- * LIFELINE — HTTP Request Logger Middleware
+ * TRUSTEDGE — HTTP Request Logger Middleware
  * 
  * Logs every incoming HTTP request with method, URL, status, and response time.
  * Uses Morgan for HTTP logging, piped through Winston for consistent format.

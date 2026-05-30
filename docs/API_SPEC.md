@@ -1,4 +1,4 @@
-# LIFELINE — API Specification v1.0
+# TRUSTEDGE — API Specification v1.0
 
 > **This document is the contract.** Frontend and backend teams build from this spec.  
 > Every endpoint is documented BEFORE implementation.  
@@ -74,7 +74,7 @@ All list endpoints support:
 ```json
 {
   "name": "Arjun Sharma",
-  "email": "arjun@lifeline.com",
+  "email": "arjun@trustedge.com",
   "password": "Test@1234",
   "role": "CUSTOMER"
 }
@@ -97,7 +97,7 @@ All list endpoints support:
     "user": {
       "id": "uuid",
       "name": "Arjun Sharma",
-      "email": "arjun@lifeline.com",
+      "email": "arjun@trustedge.com",
       "role": "CUSTOMER",
       "isActive": true,
       "createdAt": "2026-02-27T10:00:00.000Z",
@@ -127,7 +127,7 @@ All list endpoints support:
 **Request Body:**
 ```json
 {
-  "email": "arjun@lifeline.com",
+  "email": "arjun@trustedge.com",
   "password": "Test@1234"
 }
 ```
@@ -211,7 +211,7 @@ All list endpoints support:
     "user": {
       "id": "uuid",
       "name": "Arjun Sharma",
-      "email": "arjun@lifeline.com",
+      "email": "arjun@trustedge.com",
       "role": "CUSTOMER",
       "isActive": true,
       "createdAt": "...",
@@ -223,7 +223,7 @@ All list endpoints support:
 
 ---
 
-## MODULE 2: LIFELINE CORE (Stress Detection)
+## MODULE 2: TRUSTEDGE CORE (Stress Detection)
 
 ### GET `/core/profile`
 > Get current customer's financial profile and stress level.
@@ -611,7 +611,7 @@ All list endpoints support:
 |---|---|
 | **Auth** | Bearer Token |
 | **Roles** | CUSTOMER, EMPLOYEE, ADMIN |
-| **Query** | `?page=1&limit=20&type=LOAN&provider=LIFELINE Bank` |
+| **Query** | `?page=1&limit=20&type=LOAN&provider=TRUSTEDGE Bank` |
 
 **Success Response (200):**
 ```json
@@ -697,7 +697,7 @@ All list endpoints support:
       "betterAlternative": {
         "id": "uuid",
         "name": "TrustBuilder Personal Loan",
-        "provider": "LIFELINE Bank",
+        "provider": "TRUSTEDGE Bank",
         "interestRate": 11.5,
         "totalCost": 225000
       }

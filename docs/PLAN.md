@@ -1,15 +1,15 @@
-# LIFELINE — The Human Banking Platform: Technical Blueprint
+# TRUSTEDGE — The Human Banking Platform: Technical Blueprint
 
 ## 1. Product Overview
 - **Target Users**: 
   - **Customers**: Everyday banking users, especially those vulnerable to financial stress, seeking honest advice, or needing financial education.
   - **Bank Employees**: Relationship Managers and Customer Support teams who handle emotionally demanding interactions.
 - **Main Problem**: The modern banking system prioritizes profits over people. Customers are pushed into poor financial decisions and face punitive measures when struggling. Bank employees suffer burnout from emotional labor and strict targets. The result is a mutual loss of trust.
-- **Core Value**: A human-first banking ecosystem where AI acts as a protective layer and enabler rather than a replacement for human connection. It proactively supports struggling customers (LIFELINE CORE), protects employee mental health (SHIELD), educates users financially (SAGE), and provides brutally honest, unbiased financial advice (TRUTH).
+- **Core Value**: A human-first banking ecosystem where AI acts as a protective layer and enabler rather than a replacement for human connection. It proactively supports struggling customers (TRUSTEDGE CORE), protects employee mental health (SHIELD), educates users financially (SAGE), and provides brutally honest, unbiased financial advice (TRUTH).
 
 ## 2. User Flows
 
-### Customer Flow (Early Intervention - LIFELINE CORE & SAGE)
+### Customer Flow (Early Intervention - TRUSTEDGE CORE & SAGE)
 1. **Continuous Monitoring**: System ingests transaction data and identifies early signs of stress (e.g., salary drop, emergency withdrawals).
 2. **Proactive Outreach**: AI gently reaches out via app notification/SMS offering support, without punitive language.
 3. **Human Handoff**: Customer opts in and is seamlessly connected to a human Relationship Manager.
@@ -33,7 +33,7 @@ The architecture follows a microservices pattern to isolate the distinct AI feat
 - **API Gateway**: Handles routing, rate limiting, and initial authentication (Kong / AWS API Gateway).
 - **Backend Services**:
   - **Core Banking Service**: Interfaces with legacy bank mainframes (balance, transactions).
-  - **Lifeline Service**: Risk analysis and early-stress detection engine.
+  - **TrustEdge Service**: Risk analysis and early-stress detection engine.
   - **Shield Service**: Employee well-being tracking and peer routing.
   - **Sage Service**: LLM-powered financial education and dialogue manager.
   - **Truth Service**: Product comparison, fee transparency, and competitor scraping/aggregation.
@@ -89,7 +89,7 @@ The architecture follows a microservices pattern to isolate the distinct AI feat
 
 ## 6. API Contracts (REST/GraphQL)
 
-### `GET /api/v1/lifeline/status`
+### `GET /api/v1/trustedge/status`
 - **Auth**: Bearer Token (Customer)
 - **Response**: `{ "stressLevel": "MODERATE", "recommendedAction": "talk_to_advisor", "advisorAvailable": true }`
 
@@ -116,7 +116,7 @@ The architecture follows a microservices pattern to isolate the distinct AI feat
 ## 8. Third-Party Integrations
 
 - **Plaid / MX**: For secure aggregation of external bank accounts to give SAGE and TRUTH a complete financial picture.
-- **Twilio**: For SMS/WhatsApp proactive outreach (LIFELINE CORE).
+- **Twilio**: For SMS/WhatsApp proactive outreach (TRUSTEDGE CORE).
 - **OpenAI / Anthropic**: For NLP models driving SAGE (education) and TRUTH (analysis).
 - **Zendesk / Intercom**: Human handoff infrastructure for Relationship Managers.
 - **Auth0 / Okta**: Enterprise-grade identity management.
@@ -130,7 +130,7 @@ The architecture follows a microservices pattern to isolate the distinct AI feat
 ## 10. Folder Structure (Monorepo Setup)
 
 ```text
-/lifeline-monorepo
+/trustedge-monorepo
 ├── /apps
 │   ├── /web-client       # React frontend for customers & employees
 │   ├── /mobile-client    # React Native app
@@ -155,7 +155,7 @@ The architecture follows a microservices pattern to isolate the distinct AI feat
 - Setup Auth0 and basic user roles (Customer, Employee).
 - Build mock Core Banking Service to simulate transactions.
 
-### Phase 2: LIFELINE CORE & Human Handoff (Weeks 4-6)
+### Phase 2: TRUSTEDGE CORE & Human Handoff (Weeks 4-6)
 - Develop transaction ingestion script.
 - Build the early-stress detection algorithm.
 - Create UI for relationship managers to receive alerts and connect with customers.

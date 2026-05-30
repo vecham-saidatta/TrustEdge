@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Prisma Database Client (Singleton)
+ * TRUSTEDGE — Prisma Database Client (Singleton)
  * 
  * Creates a single PrismaClient instance and reuses it across the app.
  * In development, we attach it to `global` to prevent hot-reload from

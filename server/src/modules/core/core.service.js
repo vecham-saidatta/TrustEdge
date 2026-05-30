@@ -1,5 +1,5 @@
 /**
- * LIFELINE CORE — Service Layer
+ * TRUSTEDGE CORE — Service Layer
  * 
  * Business logic for:
  * - Financial profile retrieval

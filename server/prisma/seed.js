@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Database Seed Script
+ * TRUSTEDGE — Database Seed Script
  * 
  * Populates the database with realistic demo data:
  * - 3 users (1 Customer, 1 Employee, 1 Admin)
@@ -20,7 +20,7 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('🌱 Seeding LIFELINE database...\n');
+    console.log('🌱 Seeding TRUSTEDGE database...\n');
 
     // ── Clean existing data ─────────────────────────────────
     console.log('  Cleaning existing data...');
@@ -66,7 +66,7 @@ async function main() {
     const customer = await prisma.user.create({
         data: {
             name: 'Arjun Sharma',
-            email: 'arjun@lifeline.com',
+            email: 'arjun@trustedge.com',
             passwordHash,
             role: 'CUSTOMER',
             phone: '+91-9876543210',
@@ -92,7 +92,7 @@ async function main() {
     const customer2 = await prisma.user.create({
         data: {
             name: 'Meena Krishnan',
-            email: 'meena@lifeline.com',
+            email: 'meena@trustedge.com',
             passwordHash,
             role: 'CUSTOMER',
             phone: '+91-9845671230',
@@ -118,7 +118,7 @@ async function main() {
     const customer3 = await prisma.user.create({
         data: {
             name: 'Deepak Verma',
-            email: 'deepak@lifeline.com',
+            email: 'deepak@trustedge.com',
             passwordHash,
             role: 'CUSTOMER',
             phone: '+91-9012345678',
@@ -144,7 +144,7 @@ async function main() {
     const employee = await prisma.user.create({
         data: {
             name: 'Priya Patel',
-            email: 'priya@lifeline.com',
+            email: 'priya@trustedge.com',
             passwordHash,
             role: 'EMPLOYEE',
             phone: '+91-9988776655',
@@ -160,7 +160,7 @@ async function main() {
     const employee2 = await prisma.user.create({
         data: {
             name: 'Rahul Mehta',
-            email: 'rahul@lifeline.com',
+            email: 'rahul@trustedge.com',
             passwordHash,
             role: 'EMPLOYEE',
             phone: '+91-9876012345',
@@ -176,7 +176,7 @@ async function main() {
     const employee3 = await prisma.user.create({
         data: {
             name: 'Sneha Iyer',
-            email: 'sneha@lifeline.com',
+            email: 'sneha@trustedge.com',
             passwordHash,
             role: 'EMPLOYEE',
             phone: '+91-9543210987',
@@ -192,7 +192,7 @@ async function main() {
     const employee4 = await prisma.user.create({
         data: {
             name: 'Vikram Singh',
-            email: 'vikram@lifeline.com',
+            email: 'vikram@trustedge.com',
             passwordHash,
             role: 'EMPLOYEE',
             phone: '+91-9871234560',
@@ -208,7 +208,7 @@ async function main() {
     const admin = await prisma.user.create({
         data: {
             name: 'Admin User',
-            email: 'admin@lifeline.com',
+            email: 'admin@trustedge.com',
             passwordHash,
             role: 'ADMIN',
             phone: '+91-9000000001',
@@ -218,14 +218,14 @@ async function main() {
         },
     });
 
-    console.log(`    ✅ Customer: arjun@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Customer: meena@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Customer: deepak@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Employee: priya@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Employee: rahul@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Employee: sneha@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Employee: vikram@lifeline.com (password: Test@1234)`);
-    console.log(`    ✅ Admin:    admin@lifeline.com (password: Test@1234)`);
+    console.log(`    ✅ Customer: arjun@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Customer: meena@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Customer: deepak@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Employee: priya@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Employee: rahul@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Employee: sneha@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Employee: vikram@trustedge.com (password: Test@1234)`);
+    console.log(`    ✅ Admin:    admin@trustedge.com (password: Test@1234)`);
 
     // ── 2. Financial Profiles ───────────────────────────────
     console.log('  Creating financial profiles...');
@@ -466,7 +466,7 @@ async function main() {
             },
             {
                 name: 'TrustBuilder Personal Loan',
-                provider: 'LIFELINE Bank',
+                provider: 'TRUSTEDGE Bank',
                 type: 'LOAN',
                 interestRate: 11.5,
                 processingFee: 1000,
@@ -492,7 +492,7 @@ async function main() {
             },
             {
                 name: 'SimpleSave Credit Card',
-                provider: 'LIFELINE Bank',
+                provider: 'TRUSTEDGE Bank',
                 type: 'CREDIT_CARD',
                 interestRate: 24.0,
                 processingFee: 0,
@@ -518,7 +518,7 @@ async function main() {
             },
             {
                 name: 'FlexiSave Account',
-                provider: 'LIFELINE Bank',
+                provider: 'TRUSTEDGE Bank',
                 type: 'SAVINGS',
                 interestRate: 6.5,
                 processingFee: 0,
@@ -747,7 +747,7 @@ async function main() {
     console.log('\n✅ Seeding complete! Database is ready for demo.\n');
     console.log('📋 Test Accounts (all passwords: Test@1234):');
     console.log('   Customers:');
-    console.log('     arjun@lifeline.com  — Moderate stress, salary dropping');
+    console.log('     arjun@trustedge.com  — Moderate stress, salary dropping');
     // ── Seed PULSE Feedback Insights ────────────────────────
     console.log('📊 Seeding PULSE Feedback Insights...');
     const feedbackData = [
@@ -767,15 +767,15 @@ async function main() {
     }
     console.log(`   ✅ ${feedbackData.length} feedback insights seeded`);
 
-    console.log('     meena@lifeline.com  — Healthy finances, low stress');
-    console.log('     deepak@lifeline.com — Critical stress, very low balance');
+    console.log('     meena@trustedge.com  — Healthy finances, low stress');
+    console.log('     deepak@trustedge.com — Critical stress, very low balance');
     console.log('   Employees:');
-    console.log('     priya@lifeline.com  — Moderate stress (handles Arjun)');
-    console.log('     rahul@lifeline.com  — Low stress, healthy');
-    console.log('     sneha@lifeline.com  — High stress (handles Deepak\'s critical cases)');
-    console.log('     vikram@lifeline.com — Moderate, experienced');
+    console.log('     priya@trustedge.com  — Moderate stress (handles Arjun)');
+    console.log('     rahul@trustedge.com  — Low stress, healthy');
+    console.log('     sneha@trustedge.com  — High stress (handles Deepak\'s critical cases)');
+    console.log('     vikram@trustedge.com — Moderate, experienced');
     console.log('   Admin:');
-    console.log('     admin@lifeline.com');
+    console.log('     admin@trustedge.com');
 
     // ═══════════════════════════════════════════════════════════
     // CUSTOMER PORTAL — Seed Data

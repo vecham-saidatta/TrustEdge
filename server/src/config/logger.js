@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Winston Logger
+ * TRUSTEDGE — Winston Logger
  * 
  * Structured logging with:
  * - Console output (colorized in dev, JSON in prod)
@@ -37,7 +37,7 @@ const consoleFormat = winston.format.combine(
 const logger = winston.createLogger({
     level: config.logLevel,
     format: logFormat,
-    defaultMeta: { service: 'lifeline-api' },
+    defaultMeta: { service: 'trustedge-api' },
     transports: [
         // Write errors to error.log
         new winston.transports.File({

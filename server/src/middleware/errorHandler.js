@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Global Error Handler Middleware
+ * TRUSTEDGE — Global Error Handler Middleware
  * 
  * Catches ALL errors thrown in the app (including async errors).
  * Distinguishes between:

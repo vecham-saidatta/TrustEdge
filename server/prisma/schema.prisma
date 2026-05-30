@@ -1,5 +1,5 @@
 // ============================================
-// LIFELINE — Complete Database Schema
+// TRUSTEDGE — Complete Database Schema
 // Run: npm run db:migrate
 // View: npm run db:studio
 // ============================================
@@ -87,7 +87,7 @@ model User {
 
 // ═══════════════════════════════════════════════
 // TABLE 2: financial_profiles
-// Customer financial summary for stress detection (LIFELINE CORE)
+// Customer financial summary for stress detection (TRUSTEDGE CORE)
 // One-to-one with User
 // ═══════════════════════════════════════════════
 
@@ -135,7 +135,7 @@ model Transaction {
 
 // ═══════════════════════════════════════════════
 // TABLE 4: stress_alerts
-// LIFELINE CORE generates these when financial stress patterns are detected
+// TRUSTEDGE CORE generates these when financial stress patterns are detected
 // ═══════════════════════════════════════════════
 
 model StressAlert {

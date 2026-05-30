@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Auth Routes
+ * TRUSTEDGE — Auth Routes
  * 
  * POST /api/v1/auth/register  → Create a new account
  * POST /api/v1/auth/login     → Login and receive tokens

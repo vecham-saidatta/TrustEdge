@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Auth Controller
+ * TRUSTEDGE — Auth Controller
  * 
  * Thin layer between routes and service.
  * Responsibilities:

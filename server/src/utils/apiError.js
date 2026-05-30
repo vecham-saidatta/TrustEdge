@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Custom API Error Class
+ * TRUSTEDGE — Custom API Error Class
  * 
  * Extends the native Error class with HTTP status codes.
  * Throw this in any service/controller to trigger the global error handler.

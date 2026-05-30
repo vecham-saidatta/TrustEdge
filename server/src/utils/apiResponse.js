@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Standardized API Response Helper
+ * TRUSTEDGE — Standardized API Response Helper
  * 
  * Ensures EVERY API response follows the same shape.
  * Frontend developers never have to guess the response structure.

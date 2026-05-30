@@ -158,9 +158,9 @@ Model: # TrustEdge: Complete Development Plan for AntiGravity
 
 ## 1. Project Understanding & Objective
 
-### 1.1 Understanding the Existing Project (LIFELINE)
+### 1.1 Understanding the Existing Project (TRUSTEDGE)
 
-The existing LIFELINE system was a reactive financial stress detection platform with the following characteristics:
+The existing TRUSTEDGE system was a reactive financial stress detection platform with the following characteristics:
 
 | Aspect | Current State |
 |--------|--------------|
@@ -200,7 +200,7 @@ TrustEdge transforms the platform from a reactive stress detector into a **proac
 
 ### 1.4 Expected Improvements After Modification
 
-| Dimension | Before (LIFELINE) | After (TRUSTEDGE) | Improvement |
+| Dimension | Before (TRUSTEDGE) | After (TRUSTEDGE) | Improvement |
 |-----------|--------------------|--------------------|-------------|
 | Detection timing | Post-event (reactive) | 47–90 days before attrition | Shift from reactive to proactive |
 | Signal breadth | 1 category (transactions) | 5 categories (40+ signals) | 40× signal coverage |
@@ -223,7 +223,7 @@ TrustEdge transforms the platform from a reactive stress detector into a **proac
 │                        TRANSFORMATION MAP                                │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
-│  LIFELINE CORE ──────────────────────→ TRUSTEDGE CORE                   │
+│  TRUSTEDGE CORE ──────────────────────→ TRUSTEDGE CORE                   │
 │  (Isolation Forest)                    (Temporal GNN + Monte Carlo)       │
 │                                                                          │
 │  SHIELD ─────────────────────────────→ PULSE                            │
@@ -252,7 +252,7 @@ TrustEdge transforms the platform from a reactive stress detector into a **proac
 | Module | Reason for Removal | Replacement |
 |--------|-------------------|-------------|
 | SHIELD (Employee Burnout) | Out of scope for PSB churn prediction problem | PULSE (Feedback Loop) |
-| LIFELINE CORE (Stress Detection) | Reactive, single-signal, rule-based | TRUSTEDGE CORE (Proactive, 40+ signals, GNN) |
+| TRUSTEDGE CORE (Stress Detection) | Reactive, single-signal, rule-based | TRUSTEDGE CORE (Proactive, 40+ signals, GNN) |
 | Old SAGE (Financial Literacy Chat) | Purpose completely changed | New SAGE (Empathy Calibration) |
 | Old TRUTH (Product Analysis) | Purpose completely changed | New TRUTH (Outreach Execution) |
 | Employee Dashboard (SHIELD UI) | No longer relevant | RM Priority Dashboard |
@@ -1534,7 +1534,7 @@ graph TD
 │
 └── /scripts                            # ═══════ UTILITY SCRIPTS ═══════
     ├── generate-synthetic-data.py      # Generate test data
-    ├── migrate-from-lifeline.sh        # Migration from old codebase
+    ├── migrate-from-trustedge.sh        # Migration from old codebase
     ├── health-check.sh                 # System health verification
     └── benchmark.py                    # Performance benchmarking
 ```
@@ -1763,7 +1763,7 @@ RM Dashboard (Priority Contact List) ←─── Default landing page
 | `GET /api/v1/sage/literacy-modules` | Old SAGE | Purpose changed |
 | `POST /api/v1/truth/analyze-product` | Old TRUTH | Purpose changed |
 | `GET /api/v1/truth/product/{id}` | Old TRUTH | Purpose changed |
-| `POST /api/v1/lifeline/stress-score` | LIFELINE CORE | Module replaced |
+| `POST /api/v1/trustedge/stress-score` | TRUSTEDGE CORE | Module replaced |
 
 #### APIs to ADD (New System)
 

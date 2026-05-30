@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Constants
+ * TRUSTEDGE — Constants
  * 
  * Central place for all app-wide constants.
  * Avoids magic strings scattered across the codebase.

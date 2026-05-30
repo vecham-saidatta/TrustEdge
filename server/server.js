@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Server Entry Point
+ * TRUSTEDGE — Server Entry Point
  * 
  * This file starts the HTTP server.
  * It imports the configured Express app and listens on the configured port.
@@ -15,7 +15,7 @@ const logger = require('./src/config/logger');
 const PORT = config.port;
 
 const server = app.listen(PORT, () => {
-    logger.info(`🚀 LIFELINE API Server running on port ${PORT}`);
+    logger.info(`🚀 TRUSTEDGE API Server running on port ${PORT}`);
     logger.info(`📍 Environment: ${config.nodeEnv}`);
     logger.info(`🔗 Health check: http://localhost:${PORT}/api/v1/health`);
     logger.info(`🔗 Auth API:     http://localhost:${PORT}/api/v1/auth`);

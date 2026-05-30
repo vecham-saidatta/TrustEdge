@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Role-Based Access Control (RBAC) Middleware
+ * TRUSTEDGE — Role-Based Access Control (RBAC) Middleware
  * 
  * Checks if the authenticated user has one of the allowed roles.
  * Must be used AFTER the authenticate middleware.

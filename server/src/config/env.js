@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Environment Configuration
+ * TRUSTEDGE — Environment Configuration
  * 
  * Loads environment variables from .env file and exports
  * them as a validated, centralized config object.

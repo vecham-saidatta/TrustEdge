@@ -1,5 +1,5 @@
 /**
- * LIFELINE CORE — Routes
+ * TRUSTEDGE CORE — Routes
  * 
  * GET  /api/v1/core/profile       → Customer financial profile
  * GET  /api/v1/core/transactions   → Transaction history

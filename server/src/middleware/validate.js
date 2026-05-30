@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Zod Validation Middleware
+ * TRUSTEDGE — Zod Validation Middleware
  * 
  * Wraps a Zod schema and validates the request body (or query/params).
  * Returns clean, human-readable validation errors.

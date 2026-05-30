@@ -10,13 +10,13 @@ TrustEdge successfully demonstrates that a **human-first, trust-centric approach
 
 ---
 
-## 1. Evolution: From Lifeline to TrustEdge
+## 1. Evolution: From TrustEdge to TrustEdge
 
-TrustEdge represents a major strategic and technical upgrade from **Lifeline v1.0**, re-aligning the system to solve systemic churn and retention issues in public sector banking:
+TrustEdge represents a major strategic and technical upgrade from **TrustEdge v1.0**, re-aligning the system to solve systemic churn and retention issues in public sector banking:
 
 ```
 ┌───────────────────────────────────────┐         ┌───────────────────────────────────────┐
-│         LIFELINE v1.0 (Old)           │         │         TRUSTEDGE v2.0 (New)          │
+│         TRUSTEDGE v1.0 (Old)           │         │         TRUSTEDGE v2.0 (New)          │
 ├───────────────────────────────────────┤         ├───────────────────────────────────────┤
 │ • Focus: Financial Stress Detection   │         │ • Focus: Churn Prevention & Retention │
 │ • Trigger: Reactive (Post-Event)      │  ───►   │ • Trigger: Proactive (90-Day Lead)    │
@@ -31,7 +31,7 @@ TrustEdge represents a major strategic and technical upgrade from **Lifeline v1.
 
 ### 1.1 Structural Comparison
 
-| Dimension | Lifeline v1.0 (Old System) | TrustEdge v2.0 (New System) |
+| Dimension | TrustEdge v1.0 (Old System) | TrustEdge v2.0 (New System) |
 | :--- | :--- | :--- |
 | **Core Problem** | Financial stress + employee burnout | Predictive customer churn and relationship decay |
 | **Primary User** | Distressed bank customers | At-risk customers and branch Relationship Managers (RMs) |

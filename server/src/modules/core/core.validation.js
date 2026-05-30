@@ -1,5 +1,5 @@
 /**
- * LIFELINE CORE — Validation Schemas
+ * TRUSTEDGE CORE — Validation Schemas
  */
 
 const { z } = require('zod');

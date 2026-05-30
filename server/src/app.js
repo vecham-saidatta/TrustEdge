@@ -1,9 +1,9 @@
 /**
- * LIFELINE — Express Application Setup
+ * TRUSTEDGE — Express Application Setup
  * 
  * All modules wired:
  * - AUTH:   /api/v1/auth
- * - CORE:   /api/v1/core     (Lifeline Core — stress detection)
+ * - CORE:   /api/v1/core     (TrustEdge Core — stress detection)
  * - SAGE:   /api/v1/sage     (Financial education)
  * - TRUTH:  /api/v1/truth    (Product comparison)
  * - ADMIN:  /api/v1/admin    (Admin dashboard)
@@ -56,7 +56,7 @@ app.use(requestLogger);
 
 // ── Health Check ────────────────────────────────────────────
 app.get('/api/v1/health', (req, res) => {
-    return ApiResponse.success(res, 200, 'LIFELINE API is running.', {
+    return ApiResponse.success(res, 200, 'TRUSTEDGE API is running.', {
         status: 'healthy',
         timestamp: new Date().toISOString(),
         environment: config.nodeEnv,

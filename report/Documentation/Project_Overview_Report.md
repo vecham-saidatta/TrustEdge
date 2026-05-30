@@ -1,4 +1,4 @@
-# LIFELINE: The Human Banking Platform
+# TRUSTEDGE: The Human Banking Platform
 **Comprehensive Project Overview & Technical Report**
 
 ---
@@ -6,7 +6,7 @@
 ## 1. Project Introduction
 
 ### 1.1 Project Title
-**Lifeline: The Human Banking Platform**
+**TrustEdge: The Human Banking Platform**
 
 ### 1.2 Problem Statement
 The modern banking system prioritizes profits and rigid targets over people. Customers are frequently pushed into poor financial decisions, facing punitive measures when struggling, which perpetuates a cycle of debt. Simultaneously, bank employees—such as Relationship Managers and Customer Support teams—suffer from severe burnout due to the emotional labor of handling distressed customers and meeting strict sales quotas. This results in a mutual loss of trust between the institution and the individual.
@@ -19,7 +19,7 @@ The modern banking system prioritizes profits and rigid targets over people. Cus
 - To provide brutally honest, unbiased financial product analysis to prevent predatory lending.
 
 ### 1.4 Motivation
-The motivation stems from the urgent need to reshape fintech. Instead of using data to extract maximum lifetime value from users through fees, Lifeline uses data to foster financial resilience. The platform aims to prove that ethical banking is not only socially responsible but also viable by reducing default rates and employee turnover.
+The motivation stems from the urgent need to reshape fintech. Instead of using data to extract maximum lifetime value from users through fees, TrustEdge uses data to foster financial resilience. The platform aims to prove that ethical banking is not only socially responsible but also viable by reducing default rates and employee turnover.
 
 ### 1.5 Scope of the Project
 The project encompasses the development of a full-stack, AI-integrated banking interface catering to two main user groups: Customers and Employees. It includes a core banking integration layer, advanced AI analysis pipelines (NLP and predictive analytics), and multiple frontend platforms (Web and Mobile).
@@ -29,7 +29,7 @@ The project encompasses the development of a full-stack, AI-integrated banking i
 ## 2. System Architecture & Workflow
 
 ### 2.1 End-to-End Workflow Explanation
-The system operates asynchronously to ensure a seamless user experience. Transaction data streams continuously into the backend via Kafka. The Lifeline Service analyzes this data for stress indicators. If a threshold is breached, the user is notified, and a human handoff to a Relationship Manager is triggered. In parallel, employees logging off shifts submit emotional check-ins to the Shield Service, which dynamically routes them to peer support if needed.
+The system operates asynchronously to ensure a seamless user experience. Transaction data streams continuously into the backend via Kafka. The TrustEdge Service analyzes this data for stress indicators. If a threshold is breached, the user is notified, and a human handoff to a Relationship Manager is triggered. In parallel, employees logging off shifts submit emotional check-ins to the Shield Service, which dynamically routes them to peer support if needed.
 
 ### 2.2 System Pipeline
 
@@ -46,17 +46,17 @@ graph TD
     UI_Web[React Web App] --> Gateway[API Gateway / Kong]
     UI_Mobile[React Native App] --> Gateway
     
-    Gateway --> LifelineService[Lifeline Service Node.js]
+    Gateway --> TrustEdgeService[TrustEdge Service Node.js]
     Gateway --> ShieldService[Shield Service Node.js]
     Gateway --> SageService[Sage AI Service Python]
     Gateway --> TruthService[Truth AI Service Python]
     
-    LifelineService --> Kafka[Kafka Event Bus]
+    TrustEdgeService --> Kafka[Kafka Event Bus]
     CoreBanking[Core Banking Adapter] --> Kafka
     
-    Kafka --> LifelineService
+    Kafka --> TrustEdgeService
     
-    LifelineService --> DB_PG[(PostgreSQL)]
+    TrustEdgeService --> DB_PG[(PostgreSQL)]
     ShieldService --> DB_PG
     
     SageService --> DB_Vector[(Vector DB)]
@@ -72,17 +72,17 @@ graph TD
 sequenceDiagram
     participant Bank as Core Banking
     participant Kafka as Kafka Event Bus
-    participant Lifeline as Lifeline Service
+    participant TrustEdge as TrustEdge Service
     participant User as Customer App
     participant RM as Relationship Manager
     
     Bank->>Kafka: Publish Transaction (Debit)
-    Kafka->>Lifeline: Consume Transaction
-    Lifeline->>Lifeline: Analyze Risk & Stress Score
+    Kafka->>TrustEdge: Consume Transaction
+    TrustEdge->>TrustEdge: Analyze Risk & Stress Score
     alt High Stress Detected
-        Lifeline->>User: Proactive Gentle Notification
-        User->>Lifeline: Opt-in for Help
-        Lifeline->>RM: Route to Human Advisor
+        TrustEdge->>User: Proactive Gentle Notification
+        User->>TrustEdge: Opt-in for Help
+        TrustEdge->>RM: Route to Human Advisor
         RM->>User: Personal Outreach
     end
 ```
@@ -122,7 +122,7 @@ sequenceDiagram
 
 ## 4. Project Modules
 
-### 4.1 LIFELINE CORE (Early Intervention)
+### 4.1 TRUSTEDGE CORE (Early Intervention)
 - **Functionality**: Continuously monitors transaction data to identify early signs of financial stress (e.g., rapid balance drops, missed payments).
 - **Input/Output**: Input stream of transactions. Output is a calculated risk score and potential triggers for proactive outreach.
 - **Internal Working**: Utilizes rule-based algorithms combined with anomaly detection models. Triggers Kafka events when thresholds are met.
@@ -189,7 +189,7 @@ PII (Personally Identifiable Information) is scrubbed before any data is sent to
 
 ### 7.2 Backend Processing Flow
 1. Core Banking pushes a batch of transactions to the Kafka broker.
-2. The Node.js Lifeline worker consumes the topic, updates the PostgreSQL database, and recalculates the user's `stress_indicator_level`.
+2. The Node.js TrustEdge worker consumes the topic, updates the PostgreSQL database, and recalculates the user's `stress_indicator_level`.
 3. If the level upgrades to `HIGH`, an event is emitted to the Notification Service (Twilio integration).
 
 ### 7.3 Deployment Workflow
@@ -253,10 +253,10 @@ Designed for Relationship Managers, this interface minimizes cognitive load whil
 ## 12. Conclusion
 
 ### 12.1 Final Summary
-Lifeline represents a paradigm shift in financial technology. By architecting a platform that prioritizes human well-being over punitive fee extraction, it solves a critical flaw in modern banking. 
+TrustEdge represents a paradigm shift in financial technology. By architecting a platform that prioritizes human well-being over punitive fee extraction, it solves a critical flaw in modern banking. 
 
 ### 12.2 Impact
-The project not only supports vulnerable customers through proactive AI intervention (LIFELINE CORE and SAGE) but also establishes a necessary safety net for the employees driving the institution (SHIELD). The robust microservices architecture ensures that this ethical approach scales securely and efficiently.
+The project not only supports vulnerable customers through proactive AI intervention (TRUSTEDGE CORE and SAGE) but also establishes a necessary safety net for the employees driving the institution (SHIELD). The robust microservices architecture ensures that this ethical approach scales securely and efficiently.
 
 ---
 
@@ -264,7 +264,7 @@ The project not only supports vulnerable customers through proactive AI interven
 
 ### 13.1 Folder Structure
 ```text
-/lifeline-monorepo
+/trustedge-monorepo
 ├── /apps
 │   ├── /web-client       # React frontend
 │   ├── /mobile-client    # React Native app
@@ -280,7 +280,7 @@ The project not only supports vulnerable customers through proactive AI interven
 
 ### 13.2 Source Code Snippet Example (API Contract)
 ```json
-// GET /api/v1/lifeline/status
+// GET /api/v1/trustedge/status
 {
   "stressLevel": "MODERATE",
   "recommendedAction": "talk_to_advisor",

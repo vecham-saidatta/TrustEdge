@@ -1,5 +1,5 @@
 /**
- * LIFELINE — JWT Authentication Middleware
+ * TRUSTEDGE — JWT Authentication Middleware
  * 
  * Verifies Bearer tokens on protected routes.
  * On success, attaches the decoded user payload to req.user.

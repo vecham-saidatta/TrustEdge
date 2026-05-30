@@ -1,5 +1,5 @@
 /**
- * LIFELINE — Auth Validation Schemas
+ * TRUSTEDGE — Auth Validation Schemas
  * 
  * Zod schemas for all auth-related request bodies.
  * Used by the validate middleware to reject bad input before it hits the service.

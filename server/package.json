@@ -1,7 +1,7 @@
 {
-  "name": "lifeline-server",
+  "name": "trustedge-server",
   "version": "1.0.0",
-  "description": "LIFELINE — The Human Banking Platform API Server",
+  "description": "TRUSTEDGE — The Human Banking Platform API Server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,10 +16,10 @@
   "keywords": [
     "banking",
     "fintech",
-    "lifeline",
+    "trustedge",
     "human-first"
   ],
-  "author": "LIFELINE Team",
+  "author": "TRUSTEDGE Team",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-bedrock": "^3.1045.0",

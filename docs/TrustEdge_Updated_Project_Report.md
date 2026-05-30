@@ -4,7 +4,7 @@
 
 ---
 
-> **Report Version:** 2.0 (Updated from Lifeline v1.0)
+> **Report Version:** 2.0 (Updated from TrustEdge v1.0)
 > **Problem Statement:** Predictive Customer Outreach for Connection and Retention
 > **Team Members:** V S Saidatta (Cyber Security) · P Lakshmi Sahasra (AIML) · Likitha K (AIML)
 
@@ -14,7 +14,7 @@
 
 ### A.1 System Overview Comparison
 
-| Dimension | LIFELINE (Old System) | TRUSTEDGE (New System) |
+| Dimension | TRUSTEDGE (Old System) | TRUSTEDGE (New System) |
 |---|---|---|
 | **Core Problem** | Financial stress + employee burnout | Predictive customer churn in PSBs |
 | **Primary User** | Distressed customers + bank employees | At-risk customers (via RM intervention) |
@@ -33,9 +33,9 @@
 
 ### A.2 Module-Level Comparison
 
-#### A.2.1 LIFELINE CORE → TRUSTEDGE CORE
+#### A.2.1 TRUSTEDGE CORE → TRUSTEDGE CORE
 
-| Aspect | LIFELINE CORE | TRUSTEDGE CORE |
+| Aspect | TRUSTEDGE CORE | TRUSTEDGE CORE |
 |---|---|---|
 | **Purpose** | Early financial stress detection | Churn DNA fingerprinting + Ghost Journey simulation |
 | **Input Signals** | Transaction stream (debit/credit) | 40+ signals across 5 categories |
@@ -96,7 +96,7 @@
 
 ### A.3 Technical Stack Comparison
 
-| Layer | LIFELINE (Old) | TRUSTEDGE (New) |
+| Layer | TRUSTEDGE (Old) | TRUSTEDGE (New) |
 |---|---|---|
 | **Frontend Web** | React.js + Tailwind CSS | React.js + Tailwind CSS (retained) |
 | **Frontend Mobile** | React Native | React Native (retained) |
@@ -121,7 +121,7 @@
 
 ### A.4 Architecture Differences
 
-| Aspect | LIFELINE | TRUSTEDGE |
+| Aspect | TRUSTEDGE | TRUSTEDGE |
 |---|---|---|
 | **Entry Point** | API Gateway → Services | CDC pipeline → Kafka → TRUSTEDGE CORE |
 | **Core Intelligence** | Kafka consumer + rule engine | Temporal GNN processing 40+ signal streams |
