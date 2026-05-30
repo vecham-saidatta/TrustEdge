@@ -538,21 +538,7 @@ export default function SageAssistantPage() {
                                 </button>
                             </div>
 
-                            {/* Topic selector */}
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
-                                {TOPIC_QUICKSTARTS.map(t => (
-                                    <button key={t.topic} onClick={() => setTopic(t.topic)} style={{
-                                        flex: '1 1 auto', textAlign: 'center', whiteSpace: 'nowrap',
-                                        padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                                        fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
-                                        background: topic === t.topic ? t.color : 'var(--bg-card)',
-                                        color: topic === t.topic ? 'white' : 'var(--text-muted)',
-                                        transition: 'all 0.2s',
-                                    }}>
-                                        {getQuickstartLabel(t.label)}
-                                    </button>
-                                ))}
-                            </div>
+
                         </div>
 
                         {/* Quick starters when chat is empty */}
@@ -650,6 +636,23 @@ export default function SageAssistantPage() {
                             )}
                         </div>
                     </div>
+                </div>
+
+                {/* Topic selector (Moved to top of chat) */}
+                <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {TOPIC_QUICKSTARTS.map(t => (
+                        <button key={t.topic} onClick={() => setTopic(t.topic)} style={{
+                            flex: '1 1 auto', textAlign: 'center', whiteSpace: 'nowrap',
+                            padding: '6px 16px', borderRadius: 20, cursor: 'pointer',
+                            fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
+                            background: topic === t.topic ? t.color : 'var(--bg-card)',
+                            color: topic === t.topic ? 'white' : 'var(--text-muted)',
+                            border: topic === t.topic ? '1px solid transparent' : '1px solid var(--border-color)',
+                            transition: 'all 0.2s',
+                        }}>
+                            {getQuickstartLabel(t.label)}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Messages Area */}
