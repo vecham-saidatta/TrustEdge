@@ -1,0 +1,1152 @@
+// ============================================
+// LIFELINE — Complete Database Schema
+// Run: npm run db:migrate
+// View: npm run db:studio
+// ============================================
+// MVP: SQLite for zero-setup development.
+// Production: Change provider to "postgresql" and update DATABASE_URL.
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 1: users
+// Central identity table for Customer, Employee, Admin
+// ═══════════════════════════════════════════════
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("CUSTOMER") // CUSTOMER | EMPLOYEE | ADMIN
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // ── Banking Profile Fields ─────────────────────────
+  phone          String?  // +91-XXXXXXXXXX
+  dateOfBirth    String?  @map("date_of_birth")   // YYYY-MM-DD
+  gender         String?  // MALE | FEMALE | OTHER
+  panNumber      String?  @map("pan_number")       // ABCDE1234F (masked in UI)
+  aadhaarNumber  String?  @map("aadhaar_number")   // XXXX-XXXX-XXXX (masked)
+  address        String?  // Full address
+  city           String?
+  state          String?
+  pincode        String?
+  // Account Details
+  accountNumber  String?  @unique @map("account_number") // 12-digit
+  ifscCode       String?  @map("ifsc_code")
+  branchName     String?  @map("branch_name")
+  accountType    String?  @default("SAVINGS") @map("account_type") // SAVINGS | CURRENT | SALARY
+  // KYC
+  kycStatus      String?  @default("VERIFIED") @map("kyc_status") // VERIFIED | PENDING | REJECTED
+  kycVerifiedAt  DateTime? @map("kyc_verified_at")
+  // Nominee
+  nomineeName    String?  @map("nominee_name")
+  nomineeRelation String? @map("nominee_relation")
+
+  // Relations
+  financialProfile   FinancialProfile?
+  transactions       Transaction[]
+  stressAlerts       StressAlert[]       @relation("CustomerAlerts")
+  assignedAlerts     StressAlert[]       @relation("EmployeeAlerts")
+  shieldCheckins     ShieldCheckin[]
+  sageConversations  SageConversation[]
+  productComparisons ProductComparison[]
+  auditLogs          AuditLog[]
+  complaints         Complaint[]
+  signals            CustomerSignal[]
+  churnReports       ChurnReport[]
+  healthScore        CustomerHealthScore?
+  retentionOffers    RetentionOffer[]
+  retentionJourneys  RetentionJourney[]
+
+  // Customer Portal Relations
+  goals              CustomerGoal[]
+  preferences        CustomerPreferences?
+  consents           ConsentRecord[]
+  supportTickets     SupportTicket[]
+  branchAppointments BranchAppointment[]
+  offerInteractions  OfferInteraction[]
+  spendingBudgets    CustomerSpendingBudget[]
+  notifications      CustomerNotification[]
+  products           CustomerProduct[]
+  loginSessions      LoginSession[]
+  stressStatus       CustomerStressStatus?
+
+  @@map("users")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 2: financial_profiles
+// Customer financial summary for stress detection (LIFELINE CORE)
+// One-to-one with User
+// ═══════════════════════════════════════════════
+
+model FinancialProfile {
+  id              String    @id @default(uuid())
+  userId          String    @unique @map("user_id")
+  monthlyIncome   Float     @default(0) @map("monthly_income")
+  monthlyExpenses Float     @default(0) @map("monthly_expenses")
+  currentBalance  Float     @default(0) @map("current_balance")
+  riskScore       Float     @default(0) @map("risk_score") // 0.0 (safe) to 1.0 (critical)
+  stressLevel     String    @default("LOW") @map("stress_level") // LOW | MODERATE | HIGH | CRITICAL
+  lastAssessedAt  DateTime? @map("last_assessed_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("financial_profiles")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 3: transactions
+// Mock transaction log fed into stress detection engine
+// ═══════════════════════════════════════════════
+
+model Transaction {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  type            String   // CREDIT | DEBIT
+  category        String   // SALARY, FOOD, RENT, EMERGENCY, UTILITIES, ENTERTAINMENT, etc.
+  amount          Float
+  description     String?
+  transactionDate DateTime @map("transaction_date")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([category])
+  @@index([transactionDate])
+  @@map("transactions")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 4: stress_alerts
+// LIFELINE CORE generates these when financial stress patterns are detected
+// ═══════════════════════════════════════════════
+
+model StressAlert {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  assignedEmployeeId String?   @map("assigned_employee_id")
+  alertType          String    @map("alert_type") // SALARY_DROP | EMERGENCY_WITHDRAWAL | MIN_PAYMENT_REPEAT | LOW_BALANCE | LARGE_EXPENSE
+  severity           String    @default("LOW") // LOW | MODERATE | HIGH | CRITICAL
+  message            String
+  status             String    @default("OPEN") // OPEN | ACKNOWLEDGED | RESOLVED | DISMISSED
+  resolvedAt         DateTime? @map("resolved_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  customer User  @relation("CustomerAlerts", fields: [userId], references: [id])
+  employee User? @relation("EmployeeAlerts", fields: [assignedEmployeeId], references: [id])
+
+  @@index([userId])
+  @@index([assignedEmployeeId])
+  @@index([status])
+  @@index([severity])
+  @@map("stress_alerts")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 5: shield_checkins
+// SHIELD module — private employee well-being logs
+// NEVER visible to management. Employee-only access.
+// ═══════════════════════════════════════════════
+
+model ShieldCheckin {
+  id                   String   @id @default(uuid())
+  employeeId           String   @map("employee_id")
+  stressScore          Int      @map("stress_score") // 1-10 self-reported
+  mood                 String   // GOOD | OKAY | STRUGGLING | OVERWHELMED
+  notes                String?  // Private notes (sensitive data)
+  difficultCasesCount  Int      @default(0) @map("difficult_cases_count")
+  peerSupportRequested Boolean  @default(false) @map("peer_support_requested")
+  shiftDate            DateTime @map("shift_date")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  // Relations
+  employee User @relation(fields: [employeeId], references: [id])
+
+  @@index([employeeId])
+  @@index([shiftDate])
+  @@map("shield_checkins")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 6: sage_conversations
+// SAGE module — financial education chat history
+// ═══════════════════════════════════════════════
+
+model SageConversation {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  topic        String   // BUDGETING | SAVING | DEBT | INVESTING | GENERAL
+  userMessage  String   @map("user_message")
+  sageResponse String   @map("sage_response")
+  helpful      Boolean? // User feedback — was this response helpful?
+  sentiment    String?  // POSITIVE, NEUTRAL, NEGATIVE
+  distressDetected Boolean @default(false) @map("distress_detected")
+  confidenceScore Float? @map("confidence_score")
+  handoffTriggered Boolean @default(false) @map("handoff_triggered")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([topic])
+  @@map("sage_conversations")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 7: financial_products
+// TRUTH module — product catalog for comparison engine
+// ═══════════════════════════════════════════════
+
+model FinancialProduct {
+  id                String   @id @default(uuid())
+  name              String
+  provider          String   // Bank or institution name
+  type              String   // LOAN | CREDIT_CARD | SAVINGS | INVESTMENT
+  interestRate      Float    @map("interest_rate") // Annual rate (%)
+  processingFee     Float    @default(0) @map("processing_fee")
+  annualFee         Float    @default(0) @map("annual_fee")
+  prepaymentPenalty Float    @default(0) @map("prepayment_penalty")
+  minAmount         Float    @default(0) @map("min_amount")
+  maxAmount         Float    @default(0) @map("max_amount")
+  riskLevel         String   @default("LOW") @map("risk_level") // LOW | MEDIUM | HIGH
+  description       String?
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  comparisons          ProductComparison[] @relation("ComparedProduct")
+  betterAlternativeFor ProductComparison[] @relation("BetterAlternative")
+
+  @@index([type])
+  @@index([provider])
+  @@index([isActive])
+  @@map("financial_products")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 8: product_comparisons
+// TRUTH module — log of customer comparison runs
+// ═══════════════════════════════════════════════
+
+model ProductComparison {
+  id                  String   @id @default(uuid())
+  userId              String   @map("user_id")
+  productId           String   @map("product_id")
+  verdict             String   // RECOMMENDED | CAUTION | AVOID
+  totalCost           Float    @map("total_cost") // Calculated total cost over term
+  hiddenFeesTotal     Float    @default(0) @map("hidden_fees_total")
+  betterAlternativeId String?  @map("better_alternative_id")
+  reasoning           String
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user              User              @relation(fields: [userId], references: [id])
+  product           FinancialProduct  @relation("ComparedProduct", fields: [productId], references: [id])
+  betterAlternative FinancialProduct? @relation("BetterAlternative", fields: [betterAlternativeId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+  @@map("product_comparisons")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 9: audit_logs
+// System-wide audit trail for compliance
+// Append-only — no updates, no deletes
+// ═══════════════════════════════════════════════
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id") // null = system-generated action
+  action     String   // LOGIN | REGISTER | VIEW_ALERT | RESOLVE_ALERT | SHIELD_CHECKIN | etc.
+  entityType String?  @map("entity_type") // Which table was affected
+  entityId   String?  @map("entity_id") // ID of the affected record
+  details    String?  // Additional context (JSON string)
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ═══════════════════════════════════════════════
+// TABLE 10: complaints
+// Customer complaints & feedback tracking
+// ═══════════════════════════════════════════════
+
+model Complaint {
+  id                 String    @id @default(uuid())
+  userId             String    @map("user_id")
+  ticketNumber       String    @unique @map("ticket_number")
+  category           String    // TRANSACTION | ACCOUNT | LOAN | CARD | SERVICE | FRAUD | OTHER
+  subject            String
+  description        String
+  priority           String    @default("MEDIUM")  // LOW | MEDIUM | HIGH | URGENT
+  status             String    @default("OPEN")    // OPEN | IN_PROGRESS | RESOLVED | CLOSED
+  channel            String    @default("APP")
+  attachmentNote     String?   @map("attachment_note")
+
+  // 3-Tier Escalation
+  tier               String    @default("TIER_1")  // TIER_1 | TIER_2 | TIER_3
+  slaDeadline        DateTime  @map("sla_deadline")  // auto-set: T1=2d, T2=7d, T3=30d
+  escalatedAt        DateTime? @map("escalated_at")
+  escalatedToRBI     Boolean   @default(false) @map("escalated_to_rbi")
+
+  // Resolution
+  assignedEmployeeId String?   @map("assigned_employee_id") // actual user ID
+  assignedTo         String?   @map("assigned_to")           // display name
+  responseNote       String?   @map("response_note")         // employee reply to customer
+  resolution         String?
+  resolvedAt         DateTime? @map("resolved_at")
+
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([tier])
+  @@index([category])
+  @@index([slaDeadline])
+  @@map("complaints")
+}
+
+// ═══════════════════════════════════════════════
+// OUTREACH ENGINE — Campaign Management & A/B Testing
+// ═══════════════════════════════════════════════
+
+model Campaign {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  status        String    @default("DRAFT") // DRAFT | ACTIVE | PAUSED | COMPLETED
+  source        String    @default("MANUAL") // MANUAL | PULSE_AUTO | RETENTION
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime  @map("end_date")
+  segmentId     String?   @map("segment_id")
+  journeyId     String?   @map("journey_id")  // Links to RetentionJourney
+  createdById   String    @map("created_by_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  segment       AudienceSegment? @relation(fields: [segmentId], references: [id])
+  variants      Variant[]
+  channelConfigs ChannelConfig[]
+  executionLogs ExecutionLog[]
+  abTestResults ABTestResult[]
+
+  @@index([status])
+  @@index([source])
+  @@index([startDate])
+  @@index([endDate])
+  @@map("campaigns")
+}
+
+model Variant {
+  id          String   @id @default(uuid())
+  campaignId  String   @map("campaign_id")
+  label       String   // e.g. "10% Cashback" vs "Free ATM"
+  offerJson   String   @map("offer_json") // JSON string with offer details
+  weight      Int      @default(50) // Percentage weight for A/B split
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  campaign      Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  executionLogs ExecutionLog[]
+  abTestResults ABTestResult[]
+
+  @@index([campaignId])
+  @@map("variants")
+}
+
+model ChannelConfig {
+  id             String  @id @default(uuid())
+  campaignId     String  @map("campaign_id")
+  channel        String  // RM_CALL | BRANCH | WHATSAPP | SMS | INAPP | EMAIL | PUSH
+  enabled        Boolean @default(true)
+  templateBody   String? @map("template_body") // Message template with {{placeholders}}
+  providerConfig String? @map("provider_config") // JSON — Twilio SID, SendGrid key, etc.
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, channel])
+  @@index([campaignId])
+  @@map("channel_configs")
+}
+
+model AudienceSegment {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  filterJson  String   @map("filter_json") // JSON Prisma-style filter
+  customerCount Int    @default(0) @map("customer_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  campaigns Campaign[]
+
+  @@map("audience_segments")
+}
+
+model ExecutionLog {
+  id           String   @id @default(uuid())
+  campaignId   String   @map("campaign_id")
+  variantId    String   @map("variant_id")
+  channel      String   // RM_CALL | BRANCH | WHATSAPP | SMS | INAPP | EMAIL | PUSH
+  recipientId  String   @map("recipient_id") // User ID
+  source       String   @default("MANUAL") // MANUAL | PULSE_AUTO | RETENTION
+  status       String   @default("PENDING") // PENDING | SENT | DELIVERED | FAILED | OPENED | CONVERTED
+  sentAt       DateTime? @map("sent_at")
+  deliveredAt  DateTime? @map("delivered_at")
+  openedAt     DateTime? @map("opened_at")
+  convertedAt  DateTime? @map("converted_at")
+  failReason   String?  @map("fail_reason")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  variant  Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([variantId])
+  @@index([recipientId])
+  @@index([status])
+  @@index([channel])
+  @@index([source])
+  @@map("execution_logs")
+}
+
+model ABTestResult {
+  id             String   @id @default(uuid())
+  campaignId     String   @map("campaign_id")
+  variantId      String   @map("variant_id")
+  impressions    Int      @default(0)
+  delivered      Int      @default(0)
+  opened         Int      @default(0)
+  conversions    Int      @default(0)
+  conversionRate Float    @default(0) @map("conversion_rate")
+  lastUpdatedAt  DateTime @default(now()) @map("last_updated_at")
+
+  // Relations
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  variant  Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, variantId])
+  @@index([campaignId])
+  @@map("ab_test_results")
+}
+
+// ═══════════════════════════════════════════════
+// SIGNAL ENGINE — Churn DNA & Ghost Journey
+// ═══════════════════════════════════════════════
+
+model CustomerSignal {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // TRANSACTION | DIGITAL | COMPLAINT | LIFE_EVENT | MARKET | LOGIN | SUPPORT_CALL | PRODUCT_INQUIRY | PAYMENT_BOUNCE | BALANCE_DROP
+  subType     String?  @map("sub_type") // e.g. UPI, NEFT, APP_OPEN, SALARY_CREDIT, EMI_MISS
+  value       Float    @default(0)      // numeric magnitude (amount, count, score)
+  metadata    String?                   // JSON string with extra context
+  timestamp   DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, timestamp])
+  @@index([userId, type])
+  @@index([timestamp])
+  @@map("customer_signals")
+}
+
+model ChurnReport {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  periodStart      DateTime @map("period_start")
+  periodEnd        DateTime @map("period_end")
+  overallRisk      Float    @map("overall_risk")       // 0.0 - 1.0
+  riskLevel        String   @map("risk_level")         // LOW | MODERATE | HIGH | CRITICAL
+  churnProbability Float    @map("churn_probability")  // percentage
+  signalSummary    String   @map("signal_summary")     // JSON: counts per signal type
+  dailyRiskCurve   String   @map("daily_risk_curve")   // JSON: array of 90 daily scores
+  topRiskFactors   String   @map("top_risk_factors")   // JSON: array of {factor, weight, description}
+  recommendations  String?                              // JSON: array of recommended actions
+  ghostJourney     String?  @map("ghost_journey")      // JSON: 90-day simulated future trajectory
+  generatedAt      DateTime @default(now()) @map("generated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([generatedAt])
+  @@map("churn_reports")
+}
+
+// ═══════════════════════════════════════════════
+// RETENTION HUB — Customer Health, Offer Library,
+// Retention Offers, Retention Journeys, Success Metrics
+// ═══════════════════════════════════════════════
+
+// Customer Health Score — "Customer Health Score" + "Churn DNA Fingerprint" in CRM
+model CustomerHealthScore {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  healthScore      Float    @map("health_score")      // 0.0 (critical) – 1.0 (healthy)
+  healthLevel      String   @map("health_level")       // CRITICAL | AT_RISK | NEEDS_ATTENTION | HEALTHY | THRIVING
+  lifecycleStage   String   @map("lifecycle_stage")    // NEW | GROWTH | STABLE | DORMANT | AT_RISK | PREMIUM_RECOVERY
+  // Churn DNA Fingerprint fields (from design changes plan section 2)
+  disengagementReason String? @map("disengagement_reason") // FEE_SENSITIVITY | POOR_SERVICE | LOW_DIGITAL_ADOPTION | COMPETITOR_EXPOSURE | LIFE_EVENT | INACTIVITY
+  engagementTrend  String?  @map("engagement_trend")   // IMPROVING | STABLE | DECLINING | RAPIDLY_DECLINING
+  digitalAdoption  Float?   @map("digital_adoption")   // 0.0 – 1.0
+  complaintVelocity Float?  @map("complaint_velocity") // complaints per 30 days
+  transactionTrend Float?   @map("transaction_trend")  // % change in last 30 days
+  competitorExposure Float? @map("competitor_exposure") // 0.0 – 1.0
+  // 90-day risk timeline (JSON array of daily events)
+  riskTimeline     String?  @map("risk_timeline")      // JSON
+  // Recommended action
+  suggestedOffer   String?  @map("suggested_offer")    // Offer Library ID
+  suggestedChannel String?  @map("suggested_channel")  // RM_CALL | BRANCH | SMS | etc.
+  suggestedMessage String?  @map("suggested_message")
+  lastCalculatedAt DateTime @default(now()) @map("last_calculated_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
+  @@index([healthLevel])
+  @@index([lifecycleStage])
+  @@index([disengagementReason])
+  @@map("customer_health_scores")
+}
+
+// Offer Library — Approved retention offer types (design changes plan section 4, step 2)
+model OfferLibrary {
+  id              String   @id @default(uuid())
+  name            String                               // e.g. "Fee Waiver — 90 Days"
+  category        String                               // FEE_WAIVER | RATE_ADJUSTMENT | REWARD_BOOST | SERVICE_RECOVERY | BUNDLE_UPGRADE | REACTIVATION_PROMPT
+  tier            String   @default("STANDARD")        // LOW_COST | STANDARD | PREMIUM | EMERGENCY
+  description     String?
+  // Transparency fields (section 4, step 4)
+  whyShown        String?  @map("why_shown")           // Template: "Because we noticed..."
+  problemSolved   String?  @map("problem_solved")      // Template: "This helps you..."
+  validityDays    Int      @default(30) @map("validity_days")
+  customerGain    String?  @map("customer_gain")       // Template: "You'll receive..."
+  // Targeting
+  targetRiskLevels String? @map("target_risk_levels")  // JSON array: ["HIGH","CRITICAL"]
+  targetReasons    String? @map("target_reasons")       // JSON array: ["FEE_SENSITIVITY","POOR_SERVICE"]
+  offerValueJson   String? @map("offer_value_json")     // JSON: cashback amount, rate boost, etc.
+  // Policy
+  requiresApproval Boolean @default(false) @map("requires_approval")
+  maxPerCustomer   Int     @default(1) @map("max_per_customer")
+  cooldownDays     Int     @default(30) @map("cooldown_days")   // Frequency cap
+  isActive         Boolean @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  retentionOffers RetentionOffer[]
+
+  @@index([category])
+  @@index([tier])
+  @@index([isActive])
+  @@map("offer_library")
+}
+
+// Retention Offer — Actual offer delivered to a customer
+model RetentionOffer {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  offerLibraryId   String    @map("offer_library_id")
+  // Transparency fields (customer-facing)
+  explanationWhy   String?   @map("explanation_why")
+  explanationWhat  String?   @map("explanation_what")
+  explanationGain  String?   @map("explanation_gain")
+  validUntil       DateTime? @map("valid_until")
+  // Delivery
+  channel          String                               // RM_CALL | BRANCH | SMS | WHATSAPP | EMAIL | PUSH | INAPP
+  status           String    @default("PENDING")         // PENDING | SENT | ACCEPTED | DECLINED | EXPIRED | COMPLAINED
+  sentAt           DateTime? @map("sent_at")
+  respondedAt      DateTime? @map("responded_at")
+  // Customer response (PULSE feedback loop)
+  customerResponse String?   @map("customer_response")  // ACCEPTED | DECLINED | IGNORED | OPTED_OUT | COMPLAINED
+  feedbackNote     String?   @map("feedback_note")
+  // Approval workflow
+  approvedById     String?   @map("approved_by_id")
+  approvalStatus   String    @default("AUTO_APPROVED") @map("approval_status") // PENDING_APPROVAL | AUTO_APPROVED | MANUALLY_APPROVED | REJECTED
+  // Linked churn report
+  churnReportId    String?   @map("churn_report_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id])
+  offerLibrary OfferLibrary @relation(fields: [offerLibraryId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([channel])
+  @@index([customerResponse])
+  @@map("retention_offers")
+}
+
+// Retention Journey — Full lifecycle tracking (section 4, step 10)
+model RetentionJourney {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  // Journey stages
+  stage           String    @default("RISK_DETECTED")   // RISK_DETECTED | OFFER_SELECTED | CHANNEL_CHOSEN | OFFER_SENT | RESPONSE_RECEIVED | FOLLOW_UP | RESOLVED | CLOSED
+  triggerType     String    @map("trigger_type")         // SIGNAL_ENGINE | COMPLAINT | DORMANCY | MANUAL | SCHEDULED_REVIEW
+  triggerDetail   String?   @map("trigger_detail")       // JSON context
+  // Outcome
+  outcome         String?                                // RETAINED | CHURNED | REACTIVATED | ESCALATED | PENDING
+  rootCause       String?   @map("root_cause")           // Mandatory root-cause for closed accounts
+  // Timeline
+  detectedAt      DateTime  @map("detected_at")
+  resolvedAt      DateTime? @map("resolved_at")
+  lastUpdatedAt   DateTime  @default(now()) @map("last_updated_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([stage])
+  @@index([outcome])
+  @@index([triggerType])
+  @@map("retention_journeys")
+}
+
+// Retention Metrics — Aggregated success metrics snapshot (section 6)
+model RetentionMetrics {
+  id                  String   @id @default(uuid())
+  periodLabel         String   @map("period_label")        // e.g. "2026-W19", "2026-05"
+  periodStart         DateTime @map("period_start")
+  periodEnd           DateTime @map("period_end")
+  // Customer Retention
+  churnRate           Float    @default(0) @map("churn_rate")
+  avgCLV              Float    @default(0) @map("avg_clv")
+  highValueRetention  Float    @default(0) @map("high_value_retention")
+  reactivationRate    Float    @default(0) @map("reactivation_rate")
+  // Customer Experience
+  npsScore            Float    @default(0) @map("nps_score")
+  avgResolutionTime   Float    @default(0) @map("avg_resolution_time")   // hours
+  csatScore           Float    @default(0) @map("csat_score")
+  digitalEngagement   Float    @default(0) @map("digital_engagement")
+  // Revenue
+  crossSellRate       Float    @default(0) @map("cross_sell_rate")
+  revenueRetained     Float    @default(0) @map("revenue_retained")
+  walletShare         Float    @default(0) @map("wallet_share")
+  acquisitionCostSaved Float   @default(0) @map("acquisition_cost_saved")
+  // Operational
+  interventionTime    Float    @default(0) @map("intervention_time")     // hours
+  campaignEffectiveness Float  @default(0) @map("campaign_effectiveness")
+  rmAdoptionRate      Float    @default(0) @map("rm_adoption_rate")
+  riskPrioritizationAccuracy Float @default(0) @map("risk_prioritization_accuracy")
+  // Strategic
+  silentChurnReduction Float   @default(0) @map("silent_churn_reduction")
+  trustIndex          Float    @default(0) @map("trust_index")
+  productAdoption     Float    @default(0) @map("product_adoption")
+  competitiveRetention Float   @default(0) @map("competitive_retention")
+  // Snapshot
+  totalCustomers      Int      @default(0) @map("total_customers")
+  atRiskCustomers     Int      @default(0) @map("at_risk_customers")
+  offersIssued        Int      @default(0) @map("offers_issued")
+  offersAccepted      Int      @default(0) @map("offers_accepted")
+  journeysClosed      Int      @default(0) @map("journeys_closed")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@unique([periodLabel])
+  @@index([periodStart])
+  @@map("retention_metrics")
+}
+
+// ═══════════════════════════════════════════════
+// PULSE FEEDBACK LOOP — Learning Insights
+// ═══════════════════════════════════════════════
+
+model FeedbackInsight {
+  id                    String   @id @default(uuid())
+  periodLabel           String   @map("period_label")  // e.g. "2026-W19"
+  channel               String   // RM_CALL | SMS | WHATSAPP | etc.
+  riskLevel             String   @map("risk_level")    // CRITICAL | HIGH | MODERATE | LOW
+  offerCategory         String?  @map("offer_category") // FEE_WAIVER | RATE_ADJUSTMENT | etc.
+  sampleSize            Int      @default(0) @map("sample_size")
+  deliveryRate          Float    @default(0) @map("delivery_rate")
+  openRate              Float    @default(0) @map("open_rate")
+  conversionRate        Float    @default(0) @map("conversion_rate")
+  complaintRate         Float    @default(0) @map("complaint_rate")
+  avgResponseTimeHours  Float    @default(0) @map("avg_response_time_hours")
+  costPerConversion     Float    @default(0) @map("cost_per_conversion")
+  bestTimeWindow        String?  @map("best_time_window") // e.g. "14:00-18:00"
+  insight               String?  // Human-readable insight text
+  recommendedAction     String?  @map("recommended_action") // INCREASE_WEIGHT | DECREASE_WEIGHT | PAUSE
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  @@unique([periodLabel, channel, riskLevel])
+  @@index([channel])
+  @@index([riskLevel])
+  @@index([createdAt])
+  @@map("feedback_insights")
+}
+
+// ═══════════════════════════════════════════════
+// CUSTOMER PORTAL — Goals, Preferences, Support
+// Per TRUSTEDGE_CUSTOMER_PORTAL_PLAN Section 18
+// ═══════════════════════════════════════════════
+
+model CustomerGoal {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  goalType          String    @map("goal_type") // HOME, EDUCATION, EMERGENCY_FUND, VACATION, WEDDING, VEHICLE, RETIREMENT, OTHER
+  goalName          String    @map("goal_name")
+  targetAmount      Float     @map("target_amount")
+  currentAmount     Float     @default(0.0) @map("current_amount")
+  targetDate        DateTime  @map("target_date")
+  monthlyContribution Float   @map("monthly_contribution")
+  fundingMethod     String    @default("MANUAL") @map("funding_method") // AUTO_TRANSFER, MANUAL, LINKED_SIP, LINKED_RD
+  status            String    @default("ACTIVE") // ACTIVE, PAUSED, COMPLETED, ABANDONED
+  linkedProductId   String?   @map("linked_product_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  user              User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("customer_goals")
+}
+
+model CustomerPreferences {
+  id                    String   @id @default(uuid())
+  userId                String   @unique @map("user_id")
+  languagePreference    String   @default("EN") @map("language_preference")
+  uiMode                String   @default("STANDARD") @map("ui_mode")
+  transactionAlertChannels  String @default("[\"SMS\",\"IN_APP\"]") @map("transaction_alert_channels")
+  emiChannels             String @default("[\"SMS\",\"IN_APP\"]") @map("emi_channels")
+  offerChannels             String @default("[\"IN_APP\"]") @map("offer_channels")
+  sageNudgeChannels         String @default("[\"IN_APP\"]") @map("sage_nudge_channels")
+  transactionAlertThreshold Float @default(1000.0) @map("transaction_alert_threshold")
+  marketingOptIn            Boolean @default(true) @map("marketing_opt_in")
+  marketingPausedUntil      DateTime? @map("marketing_paused_until")
+  quietHoursStart           Int @default(21) @map("quiet_hours_start")
+  quietHoursEnd             Int @default(8) @map("quiet_hours_end")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  user                  User     @relation(fields: [userId], references: [id])
+
+  @@map("customer_preferences")
+}
+
+model ConsentRecord {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  consentType    String   @map("consent_type") // PERSONALIZED_OFFERS, SAGE_ANALYSIS, CROSS_PRODUCT_PROFILE, ACCOUNT_AGGREGATOR
+  granted        Boolean
+  grantedAt      DateTime @map("granted_at")
+  withdrawnAt    DateTime? @map("withdrawn_at")
+  ipAddress      String   @map("ip_address")
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([consentType])
+  @@map("consent_records")
+}
+
+model SupportTicket {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  ticketNumber    String    @unique @map("ticket_number")
+  category        String
+  subCategory     String?   @map("sub_category")
+  description     String
+  evidenceUrls    String?   @map("evidence_urls")
+  status          String    @default("OPEN")
+  resolutionNote  String?   @map("resolution_note")
+  slaDays         Int       @default(7) @map("sla_days")
+  slaDeadline     DateTime  @map("sla_deadline")
+  assignedTeam    String?   @map("assigned_team")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  resolvedAt      DateTime? @map("resolved_at")
+  user            User      @relation(fields: [userId], references: [id])
+  communications  TicketCommunication[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model TicketCommunication {
+  id        String   @id @default(uuid())
+  ticketId  String   @map("ticket_id")
+  fromRole  String   @map("from_role")
+  message   String
+  createdAt DateTime @default(now()) @map("created_at")
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id])
+
+  @@index([ticketId])
+  @@map("ticket_communications")
+}
+
+model BranchAppointment {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  branchCode     String   @map("branch_code")
+  branchName     String   @default("") @map("branch_name")
+  appointmentDate DateTime @map("appointment_date")
+  timeSlot       String   @map("time_slot")
+  reason         String
+  assignedRmId   String?  @map("assigned_rm_id")
+  status         String   @default("SCHEDULED")
+  reminderSent   Boolean  @default(false) @map("reminder_sent")
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("branch_appointments")
+}
+
+model OfferInteraction {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  offerId         String    @map("offer_id")
+  offerTitle      String    @default("") @map("offer_title")
+  offerType       String    @default("FD") @map("offer_type")
+  viewedAt        DateTime? @map("viewed_at")
+  action          String?   // ACCEPTED, DECLINED, EXPLORING, IGNORED
+  declineReason   String?   @map("decline_reason")
+  actionTakenAt   DateTime? @map("action_taken_at")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  user            User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@map("offer_interactions")
+}
+
+model CustomerSpendingBudget {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  category    String
+  monthlyLimit Float   @map("monthly_limit")
+  isActive    Boolean  @default(true) @map("is_active")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("customer_spending_budgets")
+}
+
+model CustomerNotification {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // TRANSACTION, EMI_REMINDER, FD_MATURITY, SIP_CONFIRMATION, OFFER, SAGE_NUDGE, BALANCE_ALERT, SECURITY, ANNOUNCEMENT
+  title       String
+  message     String
+  channel     String   @default("IN_APP") // SMS, WHATSAPP, EMAIL, IN_APP
+  isRead      Boolean  @default(false) @map("is_read")
+  actionUrl   String?  @map("action_url")
+  metadata    String?  // JSON
+  createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+  @@map("customer_notifications")
+}
+
+// ═══════════════════════════════════════════════
+// NEW MODELS FOR 100% DB-DRIVEN DASHBOARDS
+// ═══════════════════════════════════════════════
+
+model CustomerProduct {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  productType      String   @map("product_type") // FD, RD, SIP, LOAN, INSURANCE
+  productName      String   @map("product_name") // e.g., "TrustEdge Bluechip Fund"
+  accountNumber    String?  @map("account_number")
+  currentValue     Float    @default(0.0) @map("current_value")
+  investedAmount   Float    @default(0.0) @map("invested_amount")
+  interestRate     Float?   @map("interest_rate")
+  startDate        DateTime @map("start_date")
+  maturityDate     DateTime? @map("maturity_date")
+  status           String   @default("ACTIVE") // ACTIVE, CLOSED
+  outstandingAmount Float?  @map("outstanding_amount")
+  creditLimit      Float?   @map("credit_limit")
+  monthlyAmount    Float?   @map("monthly_amount")
+  coverAmount      Float?   @map("cover_amount")
+  premium          Float?
+  
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("customer_products")
+}
+
+model RMProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique @map("user_id")
+  branchCode         String   @map("branch_code")
+  totalCustomers     Int      @default(0) @map("total_customers")
+  aum                Float    @default(0.0)
+  conversionRate     Float    @default(0.0) @map("conversion_rate")
+  avgSlaResponseTime Float    @default(0.0) @map("avg_sla_response_time")
+  rating             Float    @default(0.0)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("rm_profiles")
+}
+
+model RMTask {
+  id          String   @id @default(uuid())
+  rmId        String   @map("rm_id") 
+  title       String
+  description String?
+  status      String   @default("PENDING")
+  priority    String   @default("MEDIUM") 
+  dueDate     DateTime @map("due_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([rmId])
+  @@map("rm_tasks")
+}
+
+model RMPerformanceSnapshot {
+  id               String   @id @default(uuid())
+  rmId             String   @map("rm_id")
+  snapshotDate     DateTime @map("snapshot_date")
+  conversionRate   Float    @map("conversion_rate")
+  casesResolved    Int      @map("cases_resolved")
+  slaBreachCount   Int      @map("sla_breach_count")
+
+  @@index([rmId])
+  @@map("rm_performance_snapshots")
+}
+
+model AlertSuppressionRule {
+  id           String   @id @default(uuid())
+  pattern      String   
+  reason       String
+  createdBy    String   @map("created_by")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("alert_suppression_rules")
+}
+
+model EscalationPath {
+  id            String   @id @default(uuid())
+  alertType     String   @map("alert_type")
+  escalateToRole String  @map("escalate_to_role")
+  timeoutMinutes Int     @map("timeout_minutes")
+  isActive      Boolean  @default(true) @map("is_active")
+
+  @@map("escalation_paths")
+}
+
+model MLModelRegistry {
+  id              String   @id @default(uuid())
+  modelName       String   @map("model_name")
+  version         String
+  status          String   @default("STAGING") 
+  accuracy        Float
+  f1Score         Float    @map("f1_score")
+  deployedAt      DateTime @map("deployed_at")
+  deployedBy      String   @map("deployed_by")
+
+  @@map("ml_model_registry")
+}
+
+model ScoreChallenge {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id") 
+  modelName    String   @map("model_name")
+  originalScore Float   @map("original_score")
+  reason       String
+  status       String   @default("PENDING") 
+  reviewedBy   String?  @map("reviewed_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("score_challenges")
+}
+
+model BiasAudit {
+  id             String   @id @default(uuid())
+  modelName      String   @map("model_name")
+  auditDate      DateTime @map("audit_date")
+  demographic    String   
+  disparateImpact Float   @map("disparate_impact")
+  passed         Boolean
+
+  @@map("bias_audits")
+}
+
+model ModelDriftSnapshot {
+  id             String   @id @default(uuid())
+  modelName      String   @map("model_name")
+  snapshotDate   DateTime @map("snapshot_date")
+  dataDriftScore Float    @map("data_drift_score")
+  conceptDriftScore Float @map("concept_drift_score")
+
+  @@map("model_drift_snapshots")
+}
+
+model ComplianceReport {
+  id            String   @id @default(uuid())
+  reportType    String   @map("report_type") 
+  generatedAt   DateTime @map("generated_at")
+  generatedBy   String   @map("generated_by")
+  s3Url         String?  @map("s3_url")
+  status        String   @default("COMPLETED")
+
+  @@map("compliance_reports")
+}
+
+model ComplianceScore {
+  id            String   @id @default(uuid())
+  domain        String   
+  score         Float
+  lastAuditedAt DateTime @map("last_audited_at")
+
+  @@map("compliance_scores")
+}
+
+model CustomerRelationship {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  relatedUserId String   @map("related_user_id")
+  relationship  String   
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("customer_relationships")
+}
+
+model BalanceSimulation {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  scenario      String   
+  day           Int
+  p10           Float
+  p50           Float
+  p90           Float
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([userId, scenario])
+  @@map("balance_simulations")
+}
+
+model RLModelVersion {
+  id            String   @id @default(uuid())
+  versionName   String   @map("version_name")
+  rewardScore   Float    @map("reward_score")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("rl_model_versions")
+}
+
+model FeatureDriftSnapshot {
+  id            String   @id @default(uuid())
+  featureName   String   @map("feature_name")
+  driftScore    Float    @map("drift_score")
+  snapshotDate  DateTime @map("snapshot_date")
+
+  @@map("feature_drift_snapshots")
+}
+
+// ═══════════════════════════════════════════════
+// NEW MODELS FOR MISSING PORTAL ENDPOINTS
+// ═══════════════════════════════════════════════
+
+model CustomerStressStatus {
+  id                String   @id @default(uuid())
+  userId            String   @unique @map("user_id")
+  status            String   @default("NONE") // NONE, MONITORING, RESTRUCTURING, PREPAYMENT
+  dismissedAt       DateTime? @map("dismissed_at")
+  lastAction        String?   @map("last_action")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user              User     @relation(fields: [userId], references: [id])
+  
+  @@map("customer_stress_status")
+}
+
+model LoginSession {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  device    String
+  ip        String
+  status    String   // SUCCESS, FAILED
+  timestamp DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@map("login_sessions")
+}
+
+model EducationArticle {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  category  String
+  readTime  Int      @map("read_time") // in minutes
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("education_articles")
+}
+
+model GlossaryTerm {
+  id          String   @id @default(uuid())
+  term        String
+  definition  String
+  category    String
+
+  @@map("glossary_terms")
+}
+
+model FeeSchedule {
+  id          String   @id @default(uuid())
+  service     String
+  fee         Float
+  description String?
+
+  @@map("fee_schedules")
+}
+

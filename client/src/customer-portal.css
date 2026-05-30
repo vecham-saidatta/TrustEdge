@@ -1,0 +1,415 @@
+/* ═══════════════════════════════════════════════════════════════
+   TRUSTEDGE CUSTOMER PORTAL — Navigation & Layout Styles
+   Per TRUSTEDGE_CUSTOMER_PORTAL_PLAN Section 3
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Customer Sidebar Branding ────────────────────── */
+.sidebar-logo-customer h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sidebar-logo-customer .sidebar-subtitle {
+  font-size: 0.68rem;
+  color: var(--accent-cyan);
+  text-transform: none;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* ── Customer Nav Section ─────────────────────────── */
+.customer-nav-section {
+  margin-bottom: 8px;
+}
+
+.customer-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+}
+
+.customer-nav-link:hover {
+  background: rgba(59, 130, 246, 0.06);
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+.customer-nav-link.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(6, 182, 212, 0.08));
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.customer-nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-cyan));
+  border-radius: 0 4px 4px 0;
+}
+
+.customer-nav-link .nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.06);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.customer-nav-link:hover .nav-icon {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.customer-nav-link.active .nav-icon {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-blue);
+}
+
+.customer-nav-link .nav-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.customer-nav-link .nav-count {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  min-width: 20px;
+  text-align: center;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  animation: pulseNotif 2s infinite;
+}
+
+/* ── Customer Nav Divider ─────────────────────────── */
+.customer-nav-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  margin: 12px 14px;
+}
+
+/* ── Language Toggle ──────────────────────────────── */
+.lang-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 100px;
+  margin-left: auto;
+}
+
+.lang-toggle-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.lang-toggle-btn:hover {
+  color: var(--text-secondary);
+}
+
+.lang-toggle-btn.active {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* ── Customer Topbar ──────────────────────────────── */
+.customer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 20px 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  animation: fadeIn 0.3s ease;
+}
+
+.customer-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customer-topbar-greeting {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-topbar-greeting .greeting-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.customer-topbar-greeting .greeting-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.customer-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customer-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.customer-back-btn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+/* ── Wellbeing Indicator Dot ──────────────────────── */
+.wellbeing-indicator-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.wellbeing-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  z-index: 2;
+}
+
+.wellbeing-dot.green {
+  background: var(--accent-green);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.wellbeing-dot.yellow {
+  background: var(--accent-yellow);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.wellbeing-dot.red {
+  background: var(--accent-red);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+/* ── Notification Bell (sidebar footer) ───────────── */
+.customer-notification-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.customer-notification-bar:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.customer-notification-bell {
+  position: relative;
+  color: var(--accent-blue);
+}
+
+.customer-notification-bell .bell-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--accent-red);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulseNotif 2s infinite;
+}
+
+.customer-notification-text {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.customer-notification-text strong {
+  color: var(--accent-blue);
+}
+
+/* ── Floating SAGE Button ─────────────────────────── */
+.sage-floating-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: sageFloatIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sage-floating-btn:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 6px 28px rgba(139, 92, 246, 0.6), 0 0 50px rgba(139, 92, 246, 0.2);
+}
+
+.sage-floating-btn:active {
+  transform: scale(0.95);
+}
+
+.sage-floating-btn .sage-float-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  animation: sagePulseRing 3s ease-out infinite;
+}
+
+.sage-floating-label {
+  position: absolute;
+  right: 64px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.sage-floating-btn:hover .sage-floating-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes sageFloatIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes sagePulseRing {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* ── Customer Role Label ──────────────────────────── */
+.customer-role-label {
+  font-size: 0.68rem;
+  color: var(--accent-cyan);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* ── Sidebar nav overflow for customer ────────────── */
+.sidebar-nav.customer-sidebar-nav {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+  padding-right: 4px;
+}
+
+/* ── Customer portal page animations ──────────────── */
+@keyframes customerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.customer-nav-link {
+  animation: customerSlideIn 0.3s ease forwards;
+}
+
+.customer-nav-link:nth-child(1) { animation-delay: 0.02s; }
+.customer-nav-link:nth-child(2) { animation-delay: 0.04s; }
+.customer-nav-link:nth-child(3) { animation-delay: 0.06s; }
+.customer-nav-link:nth-child(4) { animation-delay: 0.08s; }
+.customer-nav-link:nth-child(5) { animation-delay: 0.10s; }
+.customer-nav-link:nth-child(6) { animation-delay: 0.12s; }
+.customer-nav-link:nth-child(7) { animation-delay: 0.14s; }
+.customer-nav-link:nth-child(8) { animation-delay: 0.16s; }
+.customer-nav-link:nth-child(9) { animation-delay: 0.18s; }

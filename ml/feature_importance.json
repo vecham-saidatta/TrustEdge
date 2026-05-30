@@ -1,0 +1,14 @@
+{
+  "salary_drop_pct": 0.42175792492756886,
+  "avg_monthly_balance": 0.058995728990198525,
+  "num_sip_cancellations": 0.05888774239201716,
+  "app_login_frequency_30d": 0.07990232411480361,
+  "digital_txn_ratio": 0.06939445401615464,
+  "num_complaints_90d": 0.09704658067127034,
+  "complaint_escalation_flag": 0.02410391255252671,
+  "large_transfer_out_flag": 0.02666804181415574,
+  "outward_neft_to_competitor_ratio": 0.09489693731119454,
+  "days_since_last_login": 0.0641807011083102,
+  "fd_cancelled_last_90d": 0.003718283821245178,
+  "emi_missed_last_90d": 0.00044736828055441934
+}

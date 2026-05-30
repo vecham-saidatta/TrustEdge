@@ -1,0 +1,1514 @@
+import { useState, useEffect } from 'react';
+import {
+  Megaphone, Plus, Search, Filter, Eye, Edit3, CheckCircle, PauseCircle, StopCircle,
+  Send, Mail, MessageSquare, Phone, Smartphone, Bell, Users, Target, TrendingUp,
+  TrendingDown, BarChart3, PieChart, Calendar, Clock, DollarSign, AlertTriangle,
+  X, ChevronRight, ChevronLeft, Zap, Award, ShieldAlert, UserX, Ban, RefreshCw,
+  ArrowRight, Layers, Brain, Sparkles, Copy, Trash2, Play, Archive, MoreVertical
+} from 'lucide-react';
+import {
+  BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart as RechartsPie, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Funnel, FunnelChart,
+  LabelList
+} from 'recharts';
+
+// ═══════════════════════════════════════════════════════════
+// MOCK DATA — Realistic Indian Banking Campaigns
+// ═══════════════════════════════════════════════════════════
+
+const CHANNEL_ICONS = {
+  WhatsApp: MessageSquare,
+  'RM Call': Phone,
+  'In-App': Smartphone,
+  SMS: Mail,
+  Email: Mail,
+  Push: Bell,
+};
+
+const CHANNEL_COLORS = {
+  WhatsApp: '#25D366',
+  'RM Call': '#f59e0b',
+  'In-App': '#8b5cf6',
+  SMS: '#3b82f6',
+  Email: '#06b6d4',
+  Push: '#ef4444',
+};
+
+const STATUS_CONFIG = {
+  DRAFT: { color: '#64748b', bg: 'rgba(100,116,139,0.15)' },
+  PENDING: { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  APPROVED: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  ACTIVE: { color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+  PAUSED: { color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
+  COMPLETED: { color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+  ARCHIVED: { color: '#475569', bg: 'rgba(71,85,105,0.15)' },
+};
+
+const CAMPAIGNS = [
+  {
+    id: 1, name: 'Stage 1: Complaint Acknowledgment (Automated)',
+    status: 'ACTIVE', channel: 'SMS', segment: 'All Channels - Unresolved Complaints',
+    reach: 450, healthImpact: 'High', slaStatus: 'Within SLA', resolutionTime: 'Immediate',
+    startDate: '2026-05-01', endDate: 'Ongoing',
+    creator: 'System', approver: 'Auto',
+    hasAB: false, variants: ['Standard Acknowledgment'],
+    metrics: { sent: 450, delivered: 445, read: 410, clicked: 0, converted: 0 },
+  },
+  {
+    id: 2, name: 'Behavioral Trigger: Churn Risk Detected',
+    status: 'ACTIVE', channel: 'RM Call', segment: 'High Value NRI, Drop in Txn > 40%',
+    reach: 120, healthImpact: 'Critical', slaStatus: 'Escalated', resolutionTime: 'Pending RM Action',
+    startDate: '2026-05-15', endDate: 'Ongoing',
+    creator: 'Churn Prediction Model', approver: 'Auto',
+    hasAB: false, variants: ['RM Escalation Script'],
+    metrics: { sent: 120, delivered: 120, read: 120, clicked: 0, converted: 34 },
+  },
+  {
+    id: 3, name: 'Stage 4: SLA Breach - Delay Management',
+    status: 'ACTIVE', channel: 'WhatsApp', segment: 'Complaints > 72 Hrs Unresolved',
+    reach: 85, healthImpact: 'Severe', slaStatus: 'Breached', resolutionTime: 'Pending Support',
+    startDate: '2026-05-10', endDate: 'Ongoing',
+    creator: 'System', approver: 'Auto',
+    hasAB: false, variants: ['Apology & Revised Timeline'],
+    metrics: { sent: 85, delivered: 82, read: 75, clicked: 0, converted: 0 },
+  },
+  {
+    id: 4, name: 'Milestone Appreciation: 5 Year Anniversary',
+    status: 'PAUSED', channel: 'Email', segment: 'Account Age >= 5 Years, High Health Score',
+    reach: 4500, healthImpact: 'Positive', slaStatus: 'N/A', resolutionTime: 'N/A',
+    startDate: '2026-01-01', endDate: 'Ongoing',
+    creator: 'Retention Team', approver: 'VP - Retail Banking',
+    hasAB: true, variants: ['A: Thank You Letter', 'B: Reward Points Offer'],
+    metrics: { sent: 4500, delivered: 4410, read: 2100, clicked: 850, converted: 0 },
+    pauseReason: 'Template requires rebranding updates',
+  },
+  {
+    id: 5, name: 'Stage 6: Satisfaction Follow-up (CSAT)',
+    status: 'ACTIVE', channel: 'In-App', segment: 'Resolved Complaints (Last 24 Hrs)',
+    reach: 320, healthImpact: 'Moderate', slaStatus: 'Within SLA', resolutionTime: '< 24 Hrs',
+    startDate: '2026-05-01', endDate: 'Ongoing',
+    creator: 'System', approver: 'Auto',
+    hasAB: false, variants: ['CSAT Form 1-5 Scale'],
+    metrics: { sent: 320, delivered: 310, read: 150, clicked: 80, converted: 45 },
+  },
+  {
+    id: 6, name: 'Product Recommendation: Pre-approved OD',
+    status: 'COMPLETED', channel: 'Push', segment: 'MSME, High Transaction Vol, Zero Defaults',
+    reach: 1200, healthImpact: 'Positive', slaStatus: 'N/A', resolutionTime: 'N/A',
+    startDate: '2026-04-01', endDate: '2026-04-30',
+    creator: 'Product Team', approver: 'GM - MSME Banking',
+    hasAB: false, variants: ['Pre-approved Limit Notification'],
+    metrics: { sent: 1200, delivered: 1150, read: 800, clicked: 250, converted: 85 },
+  },
+  {
+    id: 7, name: 'Negative Sentiment Escalation',
+    status: 'PENDING', channel: 'RM Call', segment: 'Sentiment Score < 30, Multiple Tickets',
+    reach: 45, healthImpact: 'Critical', slaStatus: 'Action Required', resolutionTime: 'N/A',
+    startDate: '2026-06-01', endDate: 'Ongoing',
+    creator: 'Sentiment Model', approver: 'Head - Customer Experience',
+    hasAB: false, variants: ['Urgent RM Intervention'],
+    metrics: { sent: 0, delivered: 0, read: 0, clicked: 0, converted: 0 },
+  }
+];
+
+
+
+
+
+
+
+
+
+const RECHARTS_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+
+import { outreachAPI } from '../../api';
+
+// ═══════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════
+
+export default function OutreachManagerPage() {
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [channelFilter, setChannelFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSuppressionPanel, setShowSuppressionPanel] = useState(false);
+  const [wizardStep, setWizardStep] = useState(1);
+  const [aiSegmentText, setAiSegmentText] = useState('');
+  const [aiSegmentParsed, setAiSegmentParsed] = useState(null);
+  
+  const [campaigns, setCampaigns] = useState([]);
+  const [apiStats, setApiStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [pauseReason, setPauseReason] = useState('');
+  const [showPauseModal, setShowPauseModal] = useState(null);
+  const [suppressSearch, setSuppressSearch] = useState('');
+  const [manualSuppressName, setManualSuppressName] = useState('');
+  const [newCampaign, setNewCampaign] = useState({
+    name: '', channel: 'WhatsApp', segment: '', budget: '',
+    startDate: '', endDate: '', variants: [{ label: 'A', content: '' }],
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [campaignsRes, statsRes] = await Promise.all([
+          outreachAPI.getCampaigns(),
+          outreachAPI.getStats()
+        ]);
+        
+        const fetchedCampaigns = campaignsRes.data?.data || [];
+        if (fetchedCampaigns.length > 0) {
+          const mapped = fetchedCampaigns.map(c => {
+            const hasAB = c.variants && c.variants.length > 1;
+            const abRes = c.abTestResults || [];
+            let sent=0, delivered=0, read=0, clicked=0, converted=0;
+            const variantMetrics = {};
+            
+            abRes.forEach(r => {
+              sent += r.impressions;
+              delivered += r.delivered;
+              read += r.opened;
+              converted += r.conversions;
+              
+              const vLabel = r.variant?.label?.split(':')[0] || 'A';
+              variantMetrics[vLabel] = {
+                sent: r.impressions,
+                delivered: r.delivered,
+                read: r.opened,
+                clicked: 0,
+                converted: r.conversions,
+                significance: 0.95
+              };
+            });
+
+            return {
+              id: c.id,
+              name: c.name,
+              status: c.status,
+              channel: c.channelConfigs?.[0]?.channel || 'Email',
+              segment: c.segment?.name || 'All Customers',
+              reach: c.segment?.customerCount || 0,
+              healthImpact: c.healthImpact || 'Moderate',
+              slaStatus: c.slaStatus || 'Within SLA',
+              resolutionTime: c.resolutionTime || 'Pending',
+              startDate: c.startDate,
+              endDate: c.endDate,
+              creator: 'Admin',
+              approver: 'Auto Approved',
+              hasAB,
+              variants: c.variants?.map(v => v.label) || [],
+              metrics: { sent, delivered, read, clicked, converted },
+              variantMetrics: hasAB ? variantMetrics : null,
+            };
+          });
+          setCampaigns(mapped);
+        } else {
+          setCampaigns(CAMPAIGNS);
+        }
+
+        if (statsRes.data?.data) {
+          setApiStats(statsRes.data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch outreach data:', err);
+        setCampaigns(CAMPAIGNS);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const TABS = [
+    { key: 'all', label: 'All Workflows', count: campaigns.length },
+    { key: 'behavioral', label: 'Behavioral Triggers', count: campaigns.filter(c => c.name.includes('Behavioral') || c.name.includes('Sentiment') || c.name.includes('Milestone') || c.name.includes('Product')).length },
+    { key: 'complaints', label: 'Complaint Journeys', count: campaigns.filter(c => c.name.includes('Stage')).length },
+    { key: 'retention', label: 'Retention Workflows', count: campaigns.filter(c => c.name.includes('Churn') || c.name.includes('Retention')).length },
+    { key: 'analytics', label: 'Analytics & Impact', count: null },
+  ];
+
+  const statusMap = {
+    all: null,
+    behavioral: ['ACTIVE', 'PAUSED', 'PENDING', 'COMPLETED', 'DRAFT', 'ARCHIVED'],
+    complaints: ['ACTIVE', 'PAUSED', 'PENDING', 'COMPLETED', 'DRAFT', 'ARCHIVED'],
+    retention: ['ACTIVE', 'PAUSED', 'PENDING', 'COMPLETED', 'DRAFT', 'ARCHIVED'],
+  };
+
+  const filteredCampaigns = campaigns.filter(c => {
+    if (activeTab === 'behavioral' && !c.name.includes('Behavioral') && !c.name.includes('Sentiment') && !c.name.includes('Milestone') && !c.name.includes('Product')) return false;
+    if (activeTab === 'complaints' && !c.name.includes('Stage')) return false;
+    if (activeTab === 'retention' && !c.name.includes('Churn') && !c.name.includes('Retention')) return false;
+    
+    if (channelFilter && c.channel !== channelFilter) return false;
+    if (statusFilter && c.status !== statusFilter) return false;
+    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  const handleParseSegment = () => {
+    if (!aiSegmentText.trim()) return;
+    setTimeout(() => {
+      setAiSegmentParsed({
+        conditions: [
+          { field: 'Account Type', operator: 'IN', value: 'Savings, Current' },
+          { field: 'Balance', operator: '>', value: '₹2,00,000' },
+          { field: 'Last Transaction', operator: '<', value: '30 days ago' },
+          { field: 'Location', operator: 'IN', value: 'Mumbai, Pune, Bangalore' },
+        ],
+        estimatedReach: 14800,
+        riskDistribution: { Low: 32, Moderate: 45, High: 18, Critical: 5 },
+        aumExposure: '₹342 Cr',
+      });
+    }, 800);
+  };
+
+  const handlePauseCampaign = (id) => {
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: 'PAUSED', pauseReason } : c));
+    setShowPauseModal(null);
+    setPauseReason('');
+  };
+
+  const handleResumeCampaign = (id) => {
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: 'ACTIVE', pauseReason: '' } : c));
+  };
+
+  const handleStopCampaign = (id) => {
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: 'COMPLETED' } : c));
+  };
+
+  const handleApproveCampaign = (id) => {
+    setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: 'APPROVED' } : c));
+  };
+
+  const totalBudget = campaigns.reduce((s, c) => s + c.budget, 0);
+  const totalReach = campaigns.filter(c => c.status === 'ACTIVE').reduce((s, c) => s + c.reach, 0);
+
+  // Funnel data for selected campaign
+  const funnelData = selectedCampaign ? [
+    { name: 'Sent', value: selectedCampaign.metrics.sent, fill: '#3b82f6' },
+    { name: 'Delivered', value: selectedCampaign.metrics.delivered, fill: '#06b6d4' },
+    { name: 'Read', value: selectedCampaign.metrics.read, fill: '#8b5cf6' },
+    { name: 'Clicked', value: selectedCampaign.metrics.clicked, fill: '#f59e0b' },
+    { name: 'Converted', value: selectedCampaign.metrics.converted, fill: '#10b981' },
+  ] : [];
+
+  return (
+    <div className="fade-in">
+      {/* Page Header */}
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Brain size={28} color="var(--accent-blue)" /> Outreach & Engagement Engine
+          </h2>
+          <p>Proactive relationship management, intelligent behavioral triggers, and complaint-resolution workflows</p>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="btn btn-secondary" onClick={() => setShowSuppressionPanel(true)}>
+            <ShieldAlert size={16} /> Suppression List
+          </button>
+          <button className="btn btn-primary" onClick={() => { setShowCreateModal(true); setWizardStep(1); }}>
+            <Plus size={16} /> Create Workflow
+          </button>
+        </div>
+      </div>
+
+      {/* Summary Stats */}
+      <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="stat-card blue">
+          <div className="stat-icon blue"><Layers size={22} /></div>
+          <div className="stat-value">{campaigns.length}</div>
+          <div className="stat-label">Total Workflows</div>
+        </div>
+        <div className="stat-card green">
+          <div className="stat-icon green"><Play size={22} /></div>
+          <div className="stat-value">{campaigns.filter(c => c.status === 'ACTIVE').length}</div>
+          <div className="stat-label">Active Journeys</div>
+        </div>
+        <div className="stat-card yellow">
+          <div className="stat-icon yellow"><CheckCircle size={22} /></div>
+          <div className="stat-value">{(totalReach * 0.95).toFixed(0)}</div>
+          <div className="stat-label">Complaints Acknowledged (SLA)</div>
+        </div>
+        <div className="stat-card purple">
+          <div className="stat-icon purple"><TrendingUp size={22} /></div>
+          <div className="stat-value">94.2%</div>
+          <div className="stat-label">Retention Success Rate</div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 4, borderBottom: '1px solid var(--border-color)', marginBottom: 24, overflowX: 'auto' }}>
+        {TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => { setActiveTab(t.key); setSelectedCampaign(null); }}
+            style={{
+              padding: '10px 16px', background: 'none', border: 'none',
+              borderBottom: activeTab === t.key ? '2px solid var(--accent-blue)' : '2px solid transparent',
+              color: activeTab === t.key ? 'var(--accent-blue)' : 'var(--text-muted)',
+              fontFamily: 'inherit', fontSize: '0.85rem', fontWeight: activeTab === t.key ? 700 : 500,
+              cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            {t.label}
+            {t.count !== null && (
+              <span style={{
+                fontSize: '0.7rem', padding: '1px 7px', borderRadius: 100,
+                background: activeTab === t.key ? 'rgba(59,130,246,0.15)' : 'var(--bg-card)',
+                fontWeight: 700,
+              }}>
+                {t.count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* ═══════════════════════════════════════ */}
+      {/* CAMPAIGN LIST TABS */}
+      {/* ═══════════════════════════════════════ */}
+      {['all', 'drafts', 'pending', 'active', 'completed'].includes(activeTab) && !selectedCampaign && (
+        <div>
+          {/* Filters */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: 240 }}>
+              <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input
+                className="form-input"
+                placeholder="Search campaigns..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ paddingLeft: 40 }}
+              />
+            </div>
+            <select className="form-input" style={{ width: 160 }} value={channelFilter} onChange={e => setChannelFilter(e.target.value)}>
+              <option value="">All Channels</option>
+              {Object.keys(CHANNEL_ICONS).map(ch => <option key={ch} value={ch}>{ch}</option>)}
+            </select>
+            {activeTab === 'all' && (
+              <select className="form-input" style={{ width: 160 }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                <option value="">All Statuses</option>
+                {Object.keys(STATUS_CONFIG).map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            )}
+          </div>
+
+          {/* Campaign Table */}
+          <div className="card" style={{ padding: 0 }}>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Workflow Name</th>
+                    <th>Status</th>
+                    <th>Channel</th>
+                    <th>Target Audience</th>
+                    <th>Reach</th>
+                    <th>Health Impact</th>
+                    <th>SLA / Resolution</th>
+                    <th>A/B</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCampaigns.map(c => {
+                    const ChIcon = CHANNEL_ICONS[c.channel] || Mail;
+                    const st = STATUS_CONFIG[c.status];
+                    return (
+                      <tr key={c.id}>
+                        <td>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.85rem' }}>{c.name}</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 2 }}>Triggered by {c.creator}</div>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: 100, background: st.bg, color: st.color }}>
+                            {c.status}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <ChIcon size={14} color={CHANNEL_COLORS[c.channel]} />
+                            <span style={{ fontSize: '0.82rem' }}>{c.channel}</span>
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.8rem', maxWidth: 200 }}>{c.segment}</td>
+                        <td style={{ fontWeight: 600 }}>{c.reach.toLocaleString()}</td>
+                        <td>
+                          <div style={{ fontWeight: 600, color: c.healthImpact === 'Critical' || c.healthImpact === 'Severe' ? '#ef4444' : c.healthImpact === 'Positive' ? '#10b981' : '#f59e0b' }}>{c.healthImpact || 'Moderate'}</div>
+                        </td>
+                        <td style={{ fontSize: '0.78rem' }}>
+                          <div style={{ fontWeight: 600, color: c.slaStatus === 'Breached' || c.slaStatus === 'Escalated' ? '#ef4444' : c.slaStatus === 'Within SLA' ? '#10b981' : 'var(--text-primary)' }}>{c.slaStatus || 'N/A'}</div>
+                          <div style={{ color: 'var(--text-muted)' }}>{c.resolutionTime || 'N/A'}</div>
+                        </td>
+                        <td>
+                          {c.hasAB ? (
+                            <span className="badge badge-purple" style={{ fontSize: '0.65rem' }}>
+                              <Layers size={10} /> A/B
+                            </span>
+                          ) : <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>—</span>}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: 4 }}>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              style={{ padding: '4px 8px' }}
+                              onClick={() => setSelectedCampaign(c)}
+                              title="View Details"
+                            >
+                              <Eye size={13} />
+                            </button>
+                            {c.status === 'DRAFT' && (
+                              <button className="btn btn-sm btn-secondary" style={{ padding: '4px 8px' }} title="Edit">
+                                <Edit3 size={13} />
+                              </button>
+                            )}
+                            {c.status === 'PENDING' && (
+                              <button
+                                className="btn btn-sm btn-primary"
+                                style={{ padding: '4px 8px' }}
+                                onClick={() => handleApproveCampaign(c.id)}
+                                title="Approve"
+                              >
+                                <CheckCircle size={13} />
+                              </button>
+                            )}
+                            {c.status === 'ACTIVE' && (
+                              <>
+                                <button
+                                  className="btn btn-sm btn-secondary"
+                                  style={{ padding: '4px 8px', color: 'var(--accent-yellow)' }}
+                                  onClick={() => setShowPauseModal(c.id)}
+                                  title="Pause"
+                                >
+                                  <PauseCircle size={13} />
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  style={{ padding: '4px 8px' }}
+                                  onClick={() => handleStopCampaign(c.id)}
+                                  title="Stop"
+                                >
+                                  <StopCircle size={13} />
+                                </button>
+                              </>
+                            )}
+                            {c.status === 'PAUSED' && (
+                              <button
+                                className="btn btn-sm btn-primary"
+                                style={{ padding: '4px 8px' }}
+                                onClick={() => handleResumeCampaign(c.id)}
+                                title="Resume"
+                              >
+                                <Play size={13} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {filteredCampaigns.length === 0 && (
+              <div className="empty-state">
+                <Megaphone size={40} />
+                <h3>No campaigns found</h3>
+                <p style={{ color: 'var(--text-muted)' }}>Try adjusting your filters or create a new campaign</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* CAMPAIGN DETAIL VIEW */}
+      {/* ═══════════════════════════════════════ */}
+      {selectedCampaign && ['all', 'drafts', 'pending', 'active', 'completed'].includes(activeTab) && (
+        <div className="fade-in">
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setSelectedCampaign(null)}
+            style={{ marginBottom: 16 }}
+          >
+            <ChevronLeft size={14} /> Back to List
+          </button>
+
+          {/* Campaign Header */}
+          <div className="card" style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {selectedCampaign.name}
+                  <span style={{
+                    fontSize: '0.72rem', fontWeight: 700, padding: '3px 12px', borderRadius: 100,
+                    background: STATUS_CONFIG[selectedCampaign.status].bg,
+                    color: STATUS_CONFIG[selectedCampaign.status].color,
+                  }}>
+                    {selectedCampaign.status}
+                  </span>
+                </h3>
+                <div style={{ display: 'flex', gap: 20, fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                  <span>📁 {selectedCampaign.segment}</span>
+                  <span>👤 {selectedCampaign.creator}</span>
+                  <span>✅ {selectedCampaign.approver}</span>
+                </div>
+                {selectedCampaign.pauseReason && (
+                  <div style={{
+                    marginTop: 10, padding: '8px 14px', borderRadius: 8,
+                    background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.3)',
+                    fontSize: '0.8rem', color: '#f97316', display: 'flex', alignItems: 'center', gap: 8,
+                  }}>
+                    <AlertTriangle size={14} /> Paused: {selectedCampaign.pauseReason}
+                  </div>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {selectedCampaign.status === 'ACTIVE' && (
+                  <>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowPauseModal(selectedCampaign.id)}>
+                      <PauseCircle size={14} /> Pause
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => { handleStopCampaign(selectedCampaign.id); setSelectedCampaign(null); }}>
+                      <StopCircle size={14} /> Stop
+                    </button>
+                  </>
+                )}
+                {selectedCampaign.hasAB && selectedCampaign.status === 'ACTIVE' && (
+                  <button className="btn btn-primary btn-sm">
+                    <Award size={14} /> Swap Winning Variant
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Live Engagement Funnel */}
+          {selectedCampaign.metrics.sent > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+              <div className="card">
+                <div className="card-header">
+                  <div className="card-title"><BarChart3 size={18} /> Engagement Funnel</div>
+                </div>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={funnelData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
+                    <XAxis type="number" stroke="var(--text-muted)" fontSize={11} />
+                    <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} width={80} />
+                    <Tooltip
+                      contentStyle={{ background: '#1a2035', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, fontSize: '0.8rem' }}
+                      formatter={(v) => [v.toLocaleString(), 'Count']}
+                    />
+                    <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                      {funnelData.map((entry, i) => (
+                        <Cell key={i} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="card">
+                <div className="card-header">
+                  <div className="card-title"><TrendingUp size={18} /> Conversion Rates</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 8 }}>
+                  {[
+                    { label: 'Delivery Rate', value: selectedCampaign.metrics.delivered / selectedCampaign.metrics.sent * 100, color: '#06b6d4' },
+                    { label: 'Read Rate', value: selectedCampaign.metrics.read / selectedCampaign.metrics.sent * 100, color: '#8b5cf6' },
+                    { label: 'Click Rate', value: selectedCampaign.metrics.clicked / selectedCampaign.metrics.sent * 100, color: '#f59e0b' },
+                    { label: 'Conversion Rate', value: selectedCampaign.metrics.converted / selectedCampaign.metrics.sent * 100, color: '#10b981' },
+                  ].map((m, i) => (
+                    <div key={i}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: '0.82rem' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>{m.label}</span>
+                        <span style={{ fontWeight: 700, color: m.color }}>{m.value.toFixed(1)}%</span>
+                      </div>
+                      <div style={{ background: 'var(--bg-secondary)', borderRadius: 6, height: 8, overflow: 'hidden' }}>
+                        <div style={{ width: `${m.value}%`, height: '100%', background: m.color, borderRadius: 6, transition: 'width 0.8s ease' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
+                  <div style={{ textAlign: 'center', padding: '10px 8px', background: 'var(--bg-secondary)', borderRadius: 8 }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-blue)' }}>{selectedCampaign.metrics.sent.toLocaleString()}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Total Sent</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '10px 8px', background: 'var(--bg-secondary)', borderRadius: 8 }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-green)' }}>{selectedCampaign.metrics.converted.toLocaleString()}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Converted</div>
+                  </div>
+                  <div style={{ textAlign: 'center', padding: '10px 8px', background: 'var(--bg-secondary)', borderRadius: 8 }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-yellow)' }}>
+                      ₹{(selectedCampaign.spent / (selectedCampaign.metrics.converted || 1)).toFixed(0)}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Cost / Conversion</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* A/B Test Results */}
+          {selectedCampaign.hasAB && selectedCampaign.variantMetrics && (
+            <div className="card" style={{ marginBottom: 20 }}>
+              <div className="card-header">
+                <div className="card-title"><Layers size={18} /> A/B Test Results</div>
+                {selectedCampaign.variantMetrics.A?.significance >= 0.95 && (
+                  <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>
+                    <CheckCircle size={10} /> Statistically Significant (p &lt; 0.05)
+                  </span>
+                )}
+                {selectedCampaign.variantMetrics.A?.significance < 0.95 && selectedCampaign.variantMetrics.A?.significance > 0 && (
+                  <span className="badge badge-yellow" style={{ fontSize: '0.7rem' }}>
+                    <Clock size={10} /> Significance: {(selectedCampaign.variantMetrics.A.significance * 100).toFixed(0)}% — needs more data
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                {['A', 'B'].map(variant => {
+                  const vm = selectedCampaign.variantMetrics[variant];
+                  if (!vm) return null;
+                  const isWinner = vm.converted > selectedCampaign.variantMetrics[variant === 'A' ? 'B' : 'A']?.converted;
+                  return (
+                    <div
+                      key={variant}
+                      style={{
+                        background: isWinner ? 'rgba(16,185,129,0.05)' : 'var(--bg-secondary)',
+                        border: isWinner ? '1px solid rgba(16,185,129,0.3)' : '1px solid var(--border-color)',
+                        borderRadius: 12, padding: 16,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{
+                            width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: variant === 'A' ? 'rgba(59,130,246,0.15)' : 'rgba(139,92,246,0.15)',
+                            color: variant === 'A' ? '#3b82f6' : '#8b5cf6', fontWeight: 800, fontSize: '0.82rem',
+                          }}>
+                            {variant}
+                          </span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                            {selectedCampaign.variants[variant === 'A' ? 0 : 1]?.replace(/^[AB]: /, '')}
+                          </span>
+                        </div>
+                        {isWinner && (
+                          <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>
+                            <Award size={10} /> WINNER
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, textAlign: 'center' }}>
+                        {[
+                          { l: 'Sent', v: vm.sent },
+                          { l: 'Delivered', v: vm.delivered },
+                          { l: 'Read', v: vm.read },
+                          { l: 'Clicked', v: vm.clicked },
+                          { l: 'Converted', v: vm.converted },
+                        ].map((m, i) => (
+                          <div key={i} style={{ padding: '6px 4px', background: 'rgba(0,0,0,0.15)', borderRadius: 6 }}>
+                            <div style={{ fontSize: '0.95rem', fontWeight: 700 }}>{m.v.toLocaleString()}</div>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{m.l}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 10, fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                        CVR: <strong style={{ color: isWinner ? '#10b981' : 'var(--text-primary)' }}>
+                          {(vm.converted / vm.sent * 100).toFixed(2)}%
+                        </strong>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* CHANNEL ANALYTICS TAB */}
+      {/* ═══════════════════════════════════════ */}
+      {activeTab === 'analytics' && (
+        <div className="fade-in">
+          {/* Channel Performance Table */}
+          <div className="card" style={{ marginBottom: 24 }}>
+            <div className="card-header">
+              <div className="card-title"><BarChart3 size={18} /> Channel Performance Breakdown</div>
+            </div>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Channel</th>
+                    <th>Messages Sent</th>
+                    <th>Delivered %</th>
+                    <th>Read %</th>
+                    <th>Clicked %</th>
+                    <th>Converted %</th>
+                    <th>Opted Out %</th>
+                    <th>Cost / Conv.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(apiStats?.channelPerformance || []).map(ch => {
+                    const ChIcon = CHANNEL_ICONS[ch.channel] || Mail;
+                    const optOutAlert = ch.optOutPct > 1.5;
+                    return (
+                      <tr key={ch.channel}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <ChIcon size={16} color={CHANNEL_COLORS[ch.channel]} />
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ch.channel}</span>
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 600 }}>{ch.sent.toLocaleString()}</td>
+                        <td>
+                          <span style={{ color: ch.deliveredPct > 93 ? '#10b981' : '#f59e0b' }}>
+                            {ch.deliveredPct}%
+                          </span>
+                        </td>
+                        <td>{ch.readPct}%</td>
+                        <td>{ch.clickedPct}%</td>
+                        <td style={{ color: '#10b981', fontWeight: 600 }}>{ch.convertedPct}%</td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{
+                              color: optOutAlert ? '#ef4444' : 'var(--text-secondary)',
+                              fontWeight: optOutAlert ? 700 : 400,
+                            }}>
+                              {ch.optOutPct}%
+                            </span>
+                            {optOutAlert && (
+                              <AlertTriangle size={14} color="#ef4444" title="Exceeds 1.5% threshold!" />
+                            )}
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 600 }}>₹{ch.costPerConversion}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {/* Opt-out alert banner */}
+            {(apiStats?.channelPerformance || []).some(ch => ch.optOutPct > 1.5) && (
+              <div style={{
+                marginTop: 16, padding: '10px 16px', borderRadius: 8,
+                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.82rem', color: '#ef4444',
+              }}>
+                <AlertTriangle size={16} />
+                <span>
+                  <strong>Regulatory Alert:</strong> {(apiStats?.channelPerformance || []).filter(ch => ch.optOutPct > 1.5).map(ch => ch.channel).join(', ')} channel(s) exceed 1.5% opt-out threshold. Immediate review required per RBI guidelines.
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Conversion Trend Chart */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title"><TrendingUp size={18} /> Outreach Volume Trends (Daily)</div>
+              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={apiStats?.trendsData || (apiStats?.trendsData || [])}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
+                  <XAxis dataKey="week" stroke="var(--text-muted)" fontSize={11} />
+                  <YAxis stroke="var(--text-muted)" fontSize={11} />
+                  <Tooltip contentStyle={{ background: '#1a2035', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, fontSize: '0.8rem' }} />
+                  <Legend />
+                  {Object.keys(CHANNEL_COLORS).map((ch, i) => (
+                    <Line key={ch} type="monotone" dataKey={ch} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={{ r: 3 }} />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title"><PieChart size={18} /> Volume Distribution by Channel</div>
+              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <RechartsPie>
+                  <Pie
+                    data={(apiStats?.channelPerformance || []).map(ch => ({ name: ch.channel, value: ch.sent }))}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={4}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {(apiStats?.channelPerformance || []).map((_, i) => (
+                      <Cell key={i} fill={RECHARTS_COLORS[i % RECHARTS_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: '#1a2035', border: '1px solid rgba(148,163,184,0.2)', borderRadius: 8, fontSize: '0.8rem' }} />
+                </RechartsPie>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* SUPPRESSION TAB */}
+      {/* ═══════════════════════════════════════ */}
+      {activeTab === 'suppression' && (
+        <div className="fade-in">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <div className="stat-card red">
+              <div className="stat-icon red"><Ban size={20} /></div>
+              <div className="stat-value">{(apiStats?.suppressedCustomers || []).length}</div>
+              <div className="stat-label">Suppressed Customers</div>
+            </div>
+            <div className="stat-card yellow">
+              <div className="stat-icon yellow"><UserX size={20} /></div>
+              <div className="stat-value">{(apiStats?.suppressedCustomers || []).filter(c => c.channel === 'All').length}</div>
+              <div className="stat-label">Global Suppressions</div>
+            </div>
+            <div className="stat-card purple">
+              <div className="stat-icon purple"><ShieldAlert size={20} /></div>
+              <div className="stat-value">{(apiStats?.suppressedCustomers || []).filter(c => c.until === 'Permanent').length}</div>
+              <div className="stat-label">Permanent DNC</div>
+            </div>
+            <div className="stat-card blue">
+              <div className="stat-icon blue"><Clock size={20} /></div>
+              <div className="stat-value">{(apiStats?.suppressedCustomers || []).filter(c => c.until === 'Pending').length}</div>
+              <div className="stat-label">Pending Resolution</div>
+            </div>
+          </div>
+
+          {/* Frequency Cap Config */}
+          <div className="card" style={{ marginBottom: 20 }}>
+            <div className="card-header">
+              <div className="card-title"><RefreshCw size={18} /> Frequency Cap Rules</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+              {[
+                { channel: 'WhatsApp', maxPerWeek: 3, maxPerMonth: 8, cooldownHrs: 48 },
+                { channel: 'SMS', maxPerWeek: 2, maxPerMonth: 6, cooldownHrs: 72 },
+                { channel: 'Email', maxPerWeek: 4, maxPerMonth: 12, cooldownHrs: 24 },
+                { channel: 'Push', maxPerWeek: 5, maxPerMonth: 15, cooldownHrs: 12 },
+              ].map(rule => {
+                const ChIcon = CHANNEL_ICONS[rule.channel] || Mail;
+                return (
+                  <div key={rule.channel} style={{
+                    padding: 16, background: 'var(--bg-secondary)', borderRadius: 12,
+                    border: '1px solid var(--border-color)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                      <ChIcon size={16} color={CHANNEL_COLORS[rule.channel]} />
+                      <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{rule.channel}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.78rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Max / Week</span>
+                        <span style={{ fontWeight: 600 }}>{rule.maxPerWeek}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Max / Month</span>
+                        <span style={{ fontWeight: 600 }}>{rule.maxPerMonth}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Cooldown</span>
+                        <span style={{ fontWeight: 600 }}>{rule.cooldownHrs}h</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Suppressed Customers List */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title"><UserX size={18} /> Suppressed Customers & DNC Registry</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ position: 'relative' }}>
+                  <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                  <input
+                    className="form-input"
+                    placeholder="Search..."
+                    value={suppressSearch}
+                    onChange={e => setSuppressSearch(e.target.value)}
+                    style={{ paddingLeft: 32, padding: '6px 12px 6px 32px', fontSize: '0.8rem', width: 180 }}
+                  />
+                </div>
+                <button className="btn btn-sm btn-secondary" onClick={() => setShowSuppressionPanel(true)}>
+                  <Plus size={14} /> Manual Suppress
+                </button>
+              </div>
+            </div>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Reason</th>
+                    <th>Channel</th>
+                    <th>Duration</th>
+                    <th>Until</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(apiStats?.suppressedCustomers || []).filter(c =>
+                    !suppressSearch || c.name.toLowerCase().includes(suppressSearch.toLowerCase())
+                  ).map(c => (
+                    <tr key={c.id}>
+                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{c.name}</td>
+                      <td>
+                        <span style={{
+                          fontSize: '0.75rem', padding: '2px 8px', borderRadius: 6,
+                          background: c.reason.includes('RBI') || c.reason.includes('Legal') || c.reason.includes('Deceased')
+                            ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
+                          color: c.reason.includes('RBI') || c.reason.includes('Legal') || c.reason.includes('Deceased')
+                            ? '#ef4444' : '#f59e0b',
+                        }}>
+                          {c.reason}
+                        </span>
+                      </td>
+                      <td>{c.channel}</td>
+                      <td>{c.duration}</td>
+                      <td style={{ fontSize: '0.8rem' }}>{c.until}</td>
+                      <td>
+                        {c.until !== 'Permanent' && c.until !== 'Pending' && (
+                          <button className="btn btn-sm btn-secondary" style={{ padding: '3px 8px', fontSize: '0.72rem' }}>
+                            Remove
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* CREATE CAMPAIGN MODAL (Step Wizard) */}
+      {/* ═══════════════════════════════════════ */}
+      {showCreateModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setShowCreateModal(false)} />
+          <div style={{
+            position: 'relative', width: 780, maxHeight: '88vh', overflowY: 'auto',
+            background: 'rgba(26, 32, 53, 0.95)', backdropFilter: 'blur(20px)',
+            borderRadius: 16, border: '1px solid var(--border-color)', padding: 0,
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 28px', borderBottom: '1px solid var(--border-color)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Create New Campaign</h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Step {wizardStep} of 5</p>
+              </div>
+              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Step Indicators */}
+            <div style={{ display: 'flex', gap: 0, padding: '16px 28px', background: 'var(--bg-secondary)' }}>
+              {['Target Segment', 'Channel & Content', 'A/B Variants', 'Budget & Schedule', 'Review & Submit'].map((step, i) => (
+                <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.75rem', fontWeight: 700, flexShrink: 0,
+                    background: wizardStep > i + 1 ? '#10b981' : wizardStep === i + 1 ? '#3b82f6' : 'var(--bg-card)',
+                    color: wizardStep >= i + 1 ? 'white' : 'var(--text-muted)',
+                    border: wizardStep === i + 1 ? '2px solid #3b82f6' : '1px solid var(--border-color)',
+                  }}>
+                    {wizardStep > i + 1 ? '✓' : i + 1}
+                  </div>
+                  <span style={{ fontSize: '0.7rem', marginLeft: 6, color: wizardStep === i + 1 ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: wizardStep === i + 1 ? 600 : 400, whiteSpace: 'nowrap' }}>
+                    {step}
+                  </span>
+                  {i < 4 && <div style={{ flex: 1, height: 1, background: wizardStep > i + 1 ? '#10b981' : 'var(--border-color)', margin: '0 8px' }} />}
+                </div>
+              ))}
+            </div>
+
+            {/* Step Content */}
+            <div style={{ padding: '24px 28px' }}>
+              {/* Step 1: Target Segment */}
+              {wizardStep === 1 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Brain size={18} color="var(--accent-purple)" /> AI Segment Builder
+                  </h4>
+                  <div className="form-group">
+                    <label className="form-label">Describe your target segment in natural language</label>
+                    <textarea
+                      className="form-input"
+                      rows={3}
+                      placeholder="e.g., High-value NRI customers with FD maturity in next 30 days who haven't visited branch in 6 months..."
+                      value={aiSegmentText}
+                      onChange={e => setAiSegmentText(e.target.value)}
+                    />
+                  </div>
+                  <button className="btn btn-primary btn-sm" onClick={handleParseSegment} style={{ marginBottom: 16 }}>
+                    <Sparkles size={14} /> Parse Segment with AI
+                  </button>
+
+                  {aiSegmentParsed && (
+                    <div className="fade-in" style={{ background: 'var(--bg-secondary)', borderRadius: 12, padding: 16, border: '1px solid rgba(139,92,246,0.2)' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-purple)', marginBottom: 12 }}>
+                        🎯 Parsed Segment Conditions
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                        {aiSegmentParsed.conditions.map((cond, i) => (
+                          <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: '0.82rem' }}>
+                            <span style={{ color: 'var(--accent-blue)', fontWeight: 600, minWidth: 120 }}>{cond.field}</span>
+                            <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{cond.operator}</span>
+                            <span style={{ color: 'var(--text-primary)' }}>{cond.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                        <div style={{ padding: '10px 12px', background: 'var(--bg-card)', borderRadius: 8, textAlign: 'center' }}>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-blue)' }}>
+                            {aiSegmentParsed.estimatedReach.toLocaleString()}
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Estimated Reach</div>
+                        </div>
+                        <div style={{ padding: '10px 12px', background: 'var(--bg-card)', borderRadius: 8, textAlign: 'center' }}>
+                          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-green)' }}>
+                            {aiSegmentParsed.aumExposure}
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>AUM Exposure</div>
+                        </div>
+                        <div style={{ padding: '10px 12px', background: 'var(--bg-card)', borderRadius: 8 }}>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4 }}>Risk Distribution</div>
+                          <div style={{ display: 'flex', gap: 4 }}>
+                            {Object.entries(aiSegmentParsed.riskDistribution).map(([level, pct]) => (
+                              <div key={level} style={{
+                                flex: pct, height: 6, borderRadius: 3,
+                                background: level === 'Low' ? '#10b981' : level === 'Moderate' ? '#f59e0b' : level === 'High' ? '#ef4444' : '#dc2626',
+                              }} title={`${level}: ${pct}%`} />
+                            ))}
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                            <span>Low {aiSegmentParsed.riskDistribution.Low}%</span>
+                            <span>Critical {aiSegmentParsed.riskDistribution.Critical}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 2: Channel & Content */}
+              {wizardStep === 2 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16 }}>Channel & Message Content</h4>
+                  <div className="form-group">
+                    <label className="form-label">Campaign Name</label>
+                    <input className="form-input" placeholder="Enter campaign name..." value={newCampaign.name}
+                      onChange={e => setNewCampaign(p => ({ ...p, name: e.target.value }))} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Channel</label>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      {Object.keys(CHANNEL_ICONS).map(ch => {
+                        const ChIcon = CHANNEL_ICONS[ch];
+                        const isActive = newCampaign.channel === ch;
+                        return (
+                          <button key={ch} onClick={() => setNewCampaign(p => ({ ...p, channel: ch }))} style={{
+                            flex: 1, padding: '12px 8px', background: isActive ? `${CHANNEL_COLORS[ch]}15` : 'var(--bg-secondary)',
+                            border: `1px solid ${isActive ? CHANNEL_COLORS[ch] : 'var(--border-color)'}`,
+                            borderRadius: 10, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                          }}>
+                            <ChIcon size={18} color={isActive ? CHANNEL_COLORS[ch] : 'var(--text-muted)'} />
+                            <span style={{ fontSize: '0.72rem', fontWeight: 600, color: isActive ? CHANNEL_COLORS[ch] : 'var(--text-muted)' }}>{ch}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Message Content (Primary Variant)</label>
+                    <textarea className="form-input" rows={4} placeholder="Compose your outreach message..." />
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: A/B Variants */}
+              {wizardStep === 3 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Layers size={18} /> A/B Variant Configuration
+                  </h4>
+                  {newCampaign.variants.map((v, i) => (
+                    <div key={i} style={{ background: 'var(--bg-secondary)', borderRadius: 10, padding: 16, marginBottom: 12, border: '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{
+                            width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: i === 0 ? 'rgba(59,130,246,0.15)' : 'rgba(139,92,246,0.15)',
+                            color: i === 0 ? '#3b82f6' : '#8b5cf6', fontWeight: 800, fontSize: '0.75rem',
+                          }}>
+                            {String.fromCharCode(65 + i)}
+                          </span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Variant {String.fromCharCode(65 + i)}</span>
+                        </div>
+                        {i > 0 && (
+                          <button onClick={() => setNewCampaign(p => ({ ...p, variants: p.variants.filter((_, j) => j !== i) }))}
+                            style={{ background: 'none', border: 'none', color: 'var(--accent-red)', cursor: 'pointer' }}>
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                      <input className="form-input" placeholder={`Variant ${String.fromCharCode(65 + i)} label (e.g., "Cashback Offer")`}
+                        value={v.label} onChange={e => {
+                          const variants = [...newCampaign.variants];
+                          variants[i] = { ...variants[i], label: e.target.value };
+                          setNewCampaign(p => ({ ...p, variants }));
+                        }}
+                        style={{ marginBottom: 8 }}
+                      />
+                      <textarea className="form-input" rows={3} placeholder={`Content for variant ${String.fromCharCode(65 + i)}...`}
+                        value={v.content} onChange={e => {
+                          const variants = [...newCampaign.variants];
+                          variants[i] = { ...variants[i], content: e.target.value };
+                          setNewCampaign(p => ({ ...p, variants }));
+                        }}
+                      />
+                    </div>
+                  ))}
+                  {newCampaign.variants.length < 4 && (
+                    <button className="btn btn-secondary btn-sm"
+                      onClick={() => setNewCampaign(p => ({ ...p, variants: [...p.variants, { label: '', content: '' }] }))}>
+                      <Plus size={14} /> Add Variant
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Step 4: Budget & Schedule */}
+              {wizardStep === 4 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16 }}>Budget & Schedule</h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div className="form-group">
+                      <label className="form-label">Budget (₹)</label>
+                      <input className="form-input" type="number" placeholder="Enter budget amount..."
+                        value={newCampaign.budget}
+                        onChange={e => setNewCampaign(p => ({ ...p, budget: e.target.value }))} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Auto-Routing Based on Budget</label>
+                      <div style={{ background: 'var(--bg-secondary)', borderRadius: 8, padding: 12 }}>
+                        {(apiStats?.approvalChain || []).map((rule, i) => {
+                          const budgetNum = parseInt(newCampaign.budget) || 0;
+                          const limitNum = parseInt(rule.limit.replace(/[₹,+]/g, '')) || 0;
+                          const isActive = (i === (apiStats?.approvalChain || []).length - 1 && budgetNum > 2500000) ||
+                            (budgetNum <= limitNum && (i === 0 || budgetNum > parseInt((apiStats?.approvalChain || [])[i - 1].limit.replace(/[₹,+]/g, ''))));
+                          return (
+                            <div key={i} style={{
+                              display: 'flex', justifyContent: 'space-between', padding: '6px 0',
+                              borderBottom: i < 3 ? '1px solid var(--border-color)' : 'none',
+                              opacity: isActive ? 1 : 0.5, fontSize: '0.78rem',
+                            }}>
+                              <span style={{ color: isActive ? 'var(--accent-blue)' : 'var(--text-muted)', fontWeight: isActive ? 700 : 400 }}>
+                                {isActive && '→ '}{rule.approver}
+                              </span>
+                              <span style={{ color: 'var(--text-muted)' }}>Up to {rule.limit} • SLA: {rule.sla}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div className="form-group">
+                      <label className="form-label">Start Date</label>
+                      <input className="form-input" type="date"
+                        value={newCampaign.startDate}
+                        onChange={e => setNewCampaign(p => ({ ...p, startDate: e.target.value }))} />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">End Date</label>
+                      <input className="form-input" type="date"
+                        value={newCampaign.endDate}
+                        onChange={e => setNewCampaign(p => ({ ...p, endDate: e.target.value }))} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 5: Review */}
+              {wizardStep === 5 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <CheckCircle size={18} color="var(--accent-green)" /> Review & Submit
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: 'var(--bg-secondary)', borderRadius: 12, padding: 20 }}>
+                    {[
+                      { label: 'Campaign Name', value: newCampaign.name || '—' },
+                      { label: 'Channel', value: newCampaign.channel },
+                      { label: 'Target Segment', value: aiSegmentParsed ? `${aiSegmentParsed.estimatedReach.toLocaleString()} customers` : 'Custom segment' },
+                      { label: 'Variants', value: `${newCampaign.variants.length} variant(s)` },
+                      { label: 'Budget', value: newCampaign.budget ? `₹${parseInt(newCampaign.budget).toLocaleString()}` : '—' },
+                      { label: 'Schedule', value: newCampaign.startDate ? `${newCampaign.startDate} → ${newCampaign.endDate}` : '—' },
+                    ].map((row, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--border-color)' }}>
+                        <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{row.label}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{row.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: '16px 28px', borderTop: '1px solid var(--border-color)',
+              display: 'flex', justifyContent: 'space-between',
+            }}>
+              <button className="btn btn-secondary" onClick={() => wizardStep > 1 ? setWizardStep(s => s - 1) : setShowCreateModal(false)}>
+                {wizardStep > 1 ? <><ChevronLeft size={14} /> Previous</> : 'Cancel'}
+              </button>
+              <button className="btn btn-primary" onClick={async () => {
+                if (wizardStep < 5) {
+                  setWizardStep(s => s + 1);
+                } else {
+                  try {
+                    let segmentId = null;
+                    if (aiSegmentParsed) {
+                      const segRes = await outreachAPI.createSegment({
+                        name: `Segment: ${newCampaign.name}`,
+                        description: aiSegmentText,
+                        filterJson: JSON.stringify({ aiConditions: aiSegmentParsed.conditions })
+                      });
+                      segmentId = segRes.data?.data?.id;
+                    }
+
+                    await outreachAPI.createCampaign({
+                      name: newCampaign.name || 'New Campaign',
+                      description: 'AI Generated Campaign',
+                      startDate: newCampaign.startDate || new Date().toISOString().split('T')[0],
+                      endDate: newCampaign.endDate || new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+                      segmentId,
+                      variants: newCampaign.variants.map(v => ({
+                        label: v.label,
+                        offerJson: v.content,
+                        weight: Math.floor(100 / newCampaign.variants.length)
+                      })),
+                      channels: [{
+                        channel: newCampaign.channel,
+                        enabled: true,
+                        templateBody: newCampaign.variants[0]?.content || ''
+                      }]
+                    });
+
+                    // Re-fetch campaigns to update list
+                    const campaignsRes = await outreachAPI.getCampaigns();
+                    const fetchedCampaigns = campaignsRes.data?.data || [];
+                    const mapped = fetchedCampaigns.map(c => {
+                      const hasAB = c.variants && c.variants.length > 1;
+                      const abRes = c.abTestResults || [];
+                      let sent=0, delivered=0, read=0, clicked=0, converted=0;
+                      abRes.forEach(r => {
+                        sent += r.impressions;
+                        delivered += r.delivered;
+                        read += r.opened;
+                        converted += r.conversions;
+                      });
+                      return {
+                        id: c.id,
+                        name: c.name,
+                        status: c.status,
+                        channel: c.channelConfigs?.[0]?.channel || 'Email',
+                        segment: c.segment?.name || 'All Customers',
+                        reach: c.segment?.customerCount || 0,
+                        budget: 100000,
+                        spent: 0,
+                        startDate: c.startDate,
+                        endDate: c.endDate,
+                        creator: 'Admin',
+                        approver: 'Auto Approved',
+                        hasAB,
+                        variants: c.variants?.map(v => v.label) || [],
+                        metrics: { sent, delivered, read, clicked, converted },
+                        variantMetrics: null,
+                      };
+                    });
+                    setCampaigns(mapped);
+
+                    setShowCreateModal(false);
+                    setNewCampaign({
+                      name: '', channel: 'WhatsApp', segment: '', budget: '',
+                      startDate: '', endDate: '', variants: [{ label: 'A', content: '' }],
+                    });
+                    setAiSegmentText('');
+                    setAiSegmentParsed(null);
+                  } catch (e) {
+                    console.error('Failed to create campaign', e);
+                    alert('Error creating campaign. Check console.');
+                  }
+                }
+              }}>
+                {wizardStep < 5 ? <>Next <ChevronRight size={14} /></> : <><Send size={14} /> Submit for Approval</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* PAUSE REASON MODAL */}
+      {/* ═══════════════════════════════════════ */}
+      {showPauseModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)' }}
+            onClick={() => setShowPauseModal(null)} />
+          <div style={{
+            position: 'relative', width: 440, background: 'rgba(26, 32, 53, 0.95)',
+            backdropFilter: 'blur(20px)', borderRadius: 16, border: '1px solid var(--border-color)', padding: 28,
+          }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <PauseCircle size={20} color="var(--accent-yellow)" /> Pause Campaign
+            </h3>
+            <div className="form-group">
+              <label className="form-label">Reason for Pausing</label>
+              <textarea
+                className="form-input"
+                rows={3}
+                placeholder="Enter pause reason (required for audit trail)..."
+                value={pauseReason}
+                onChange={e => setPauseReason(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              <button className="btn btn-secondary" onClick={() => setShowPauseModal(null)}>Cancel</button>
+              <button className="btn btn-primary" onClick={() => handlePauseCampaign(showPauseModal)} disabled={!pauseReason.trim()}>
+                <PauseCircle size={14} /> Confirm Pause
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════ */}
+      {/* MANUAL SUPPRESSION PANEL (Slide-in) */}
+      {/* ═══════════════════════════════════════ */}
+      {showSuppressionPanel && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          display: 'flex', justifyContent: 'flex-end',
+        }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setShowSuppressionPanel(false)} />
+          <div style={{
+            position: 'relative', width: 420, height: '100vh', overflowY: 'auto',
+            background: 'rgba(26, 32, 53, 0.98)', backdropFilter: 'blur(20px)',
+            borderLeft: '1px solid var(--border-color)', padding: 28,
+            animation: 'slideInRight 0.3s ease',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Manual Suppress</h3>
+              <button onClick={() => setShowSuppressionPanel(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Customer Name / Account</label>
+              <input className="form-input" placeholder="Search customer..."
+                value={manualSuppressName} onChange={e => setManualSuppressName(e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Suppression Reason</label>
+              <select className="form-input">
+                <option>Customer Request</option>
+                <option>Complaint — Excessive Outreach</option>
+                <option>Opted Out</option>
+                <option>Regulatory / Legal Hold</option>
+                <option>Account Closed</option>
+                <option>Fraud Alert</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Channel(s)</label>
+              <select className="form-input">
+                <option>All Channels</option>
+                <option>WhatsApp</option>
+                <option>SMS</option>
+                <option>Email</option>
+                <option>Push</option>
+                <option>RM Call</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Duration</label>
+              <select className="form-input">
+                <option>30 Days</option>
+                <option>60 Days</option>
+                <option>90 Days</option>
+                <option>180 Days</option>
+                <option>Permanent</option>
+                <option>Until Resolved</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Notes</label>
+              <textarea className="form-input" rows={3} placeholder="Additional notes..." />
+            </div>
+            <button className="btn btn-primary" style={{ width: '100%' }}>
+              <Ban size={14} /> Add to Suppression List
+            </button>
+
+            {/* Global Suppression List Summary */}
+            <div style={{ marginTop: 32, paddingTop: 20, borderTop: '1px solid var(--border-color)' }}>
+              <h4 style={{ fontSize: '0.88rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-secondary)' }}>
+                Global DNC Summary
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { label: 'RBI DNC Registry', count: 234, color: '#ef4444' },
+                  { label: 'Customer Opted Out', count: 1856, color: '#f59e0b' },
+                  { label: 'Legal / Regulatory Hold', count: 45, color: '#8b5cf6' },
+                  { label: 'Account Frozen / Closed', count: 312, color: '#64748b' },
+                  { label: 'Deceased Accounts', count: 89, color: '#475569' },
+                ].map((item, i) => (
+                  <div key={i} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '8px 12px', background: 'var(--bg-secondary)', borderRadius: 8,
+                  }}>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.label}</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: item.color }}>{item.count.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
