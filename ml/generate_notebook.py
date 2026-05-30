@@ -147,6 +147,11 @@ notebook_content = {
   }
  ],
  "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
   "language_info": {
    "name": "python"
   }
