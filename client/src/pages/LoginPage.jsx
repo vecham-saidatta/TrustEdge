@@ -96,6 +96,13 @@ export default function LoginPage() {
                             ⚙️ Admin
                         </button>
                     </div>
+
+                    <div style={{ marginTop: 16 }}>
+                        <a href="https://youtu.be/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)', color: 'white', border: 'none', fontWeight: 'bold' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Watch 2-Minute Demo Video
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
