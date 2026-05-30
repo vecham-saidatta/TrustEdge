@@ -522,11 +522,11 @@ export default function SageAssistantPage() {
             }}>
                 {!historyCollapsed && (
                     <>
-                        <div style={{ padding: '20px 16px 12px', borderBottom: '1px solid var(--border-color)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifySpace: 'between', justifyContent: 'space-between', marginBottom: 12 }}>
-                                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ padding: '16px', borderBottom: '1px solid var(--border-color)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
                                     <MessageSquare size={18} style={{ color: 'var(--accent-blue)' }} />
-                                    {t.sageAssistantTitle}
+                                    {t.sageAssistantTitle || (customerLang === 'HI' ? 'इतिहास' : 'History')}
                                 </h3>
                                 <button onClick={clearChat} className="btn btn-sm" style={{
                                     padding: '6px 10px', fontSize: '0.72rem',
