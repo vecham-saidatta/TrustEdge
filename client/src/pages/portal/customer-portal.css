@@ -5793,3 +5793,26 @@
 .cp-support-ombudsman a:hover {
   text-decoration: underline;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .cp-txn-list-card, .cp-txn-list-card * {
+    visibility: visible;
+  }
+  .cp-txn-list-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  html, body, .portal-layout, .portal-content {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
