@@ -983,26 +983,82 @@ export default function Customer360Page() {
       {/* Coming Soon Modal */}
       {showComingSoonModal && (
         <div className="admin-modal-overlay" onClick={() => setShowComingSoonModal(false)}>
-          <div className="admin-modal admin-modal-md" onClick={e => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3 className="admin-modal-title">Feature Coming Soon</h3>
+          <div className="admin-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 500, padding: 32 }}>
+            <div style={{ position: 'relative' }}>
               <button className="admin-modal-close" onClick={() => setShowComingSoonModal(false)}><X size={16} /></button>
             </div>
-            <div className="admin-modal-body" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
               <div style={{
-                width: 64, height: 64, borderRadius: '50%', background: 'rgba(59,130,246,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
-                color: 'var(--accent-blue)'
+                width: 48, height: 48, borderRadius: 'var(--radius-md)',
+                background: 'rgba(245, 158, 11, 0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 0 20px rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.2)'
               }}>
-                <Clock size={32} />
+                <Layers size={24} color="#f59e0b" />
               </div>
-              <h4 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>{comingSoonFeature} is under construction</h4>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: 300, margin: '0 auto' }}>
-                We're currently building this feature. It will be available in an upcoming release of the TrustEdge Admin Portal.
-              </p>
+              <div>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>{comingSoonFeature}</h2>
+                <span style={{
+                  marginTop: 6,
+                  padding: '4px 10px', borderRadius: 100,
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  color: '#f59e0b',
+                  fontSize: '0.65rem', fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.5px',
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                }}>
+                  <span style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: '#f59e0b',
+                    boxShadow: '0 0 8px rgba(245, 158, 11, 0.6)',
+                    animation: 'pulseNotif 2s infinite',
+                  }} />
+                  Under Development
+                </span>
+              </div>
             </div>
-            <div className="admin-modal-footer" style={{ justifyContent: 'center' }}>
-              <button className="action-btn primary" onClick={() => setShowComingSoonModal(false)}>Got it</button>
+
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 24 }}>
+              The <strong>{comingSoonFeature}</strong> module is currently under active development. Our engineering team is integrating the necessary backend APIs and ML models.
+            </p>
+
+            <div style={{
+              background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+              padding: 20, marginBottom: 24, border: '1px solid var(--border-color)'
+            }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 16 }}>
+                Implementation Pipeline
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                {/* Step 1 */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)' }}>
+                    <Check size={12} color="white" />
+                  </div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 500, color: 'var(--text-primary)', textAlign: 'center' }}>UI Design</span>
+                </div>
+                <div style={{ flex: 1, height: 2, background: '#10b981', alignSelf: 'center', marginTop: '-20px' }} />
+                
+                {/* Step 2 */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#3b82f6', border: '2px solid #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 12px rgba(59, 130, 246, 0.5)' }}>
+                    <Sparkles size={10} color="white" />
+                  </div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center' }}>API Binding</span>
+                </div>
+                <div style={{ flex: 1, height: 2, background: 'var(--border-strong)', alignSelf: 'center', marginTop: '-20px' }} />
+                
+                {/* Step 3 */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'transparent', border: '2px solid var(--border-strong)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+                  <span style={{ fontSize: '0.7rem', fontWeight: 500, color: 'var(--text-muted)', textAlign: 'center' }}>Production</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="action-btn primary" onClick={() => setShowComingSoonModal(false)}>Acknowledge</button>
             </div>
           </div>
         </div>
