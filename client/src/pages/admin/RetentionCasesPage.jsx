@@ -531,7 +531,7 @@ function CaseDetailModal({ caseData, onClose }) {
       try {
         const token = localStorage.getItem('accessToken');
         const userId = caseData.userId || caseData.user?.id || '';
-        let url = `http://localhost:5000/api/v1/retention/simulate`;
+        let url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/retention/simulate`;
         if (userId) url += `?userId=${userId}`;
         const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
@@ -539,7 +539,7 @@ function CaseDetailModal({ caseData, onClose }) {
           setMcData(data.data.map(d => ({ day: d.day, p10: d.p10, p50: d.p50, p90: d.p90 })));
         } else {
            // If no simulations found for user, fetch default baseline
-          const res2 = await fetch(`http://localhost:5000/api/v1/retention/simulate`, { headers: { Authorization: `Bearer ${token}` } });
+          const res2 = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/retention/simulate`, { headers: { Authorization: `Bearer ${token}` } });
           const data2 = await res2.json();
           if (data2?.data?.length > 0) {
              setMcData(data2.data.map(d => ({ day: d.day, p10: d.p10, p50: d.p50, p90: d.p90 })));

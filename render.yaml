@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: trustedge-api
+    env: node
+    plan: free
+    buildCommand: "cd server && npm install && npx prisma generate"
+    startCommand: "cd server && node src/index.js"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
