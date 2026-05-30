@@ -232,7 +232,7 @@ ${text}`;
         if (bedrockClient) {
             try {
                 const command = new ConverseCommand({
-                    modelId: 'openai.gpt-oss-120b-1:0',
+                    modelId: 'gpt-oss-120b',
                     messages: [{ role: 'user', content: [{ text: prompt }] }]
                 });
                 const response = await bedrockClient.send(command);
@@ -295,7 +295,7 @@ const generateAIResponse = async (message, topic, chatHistory, language = 'ENGLI
         if (bedrockClient) {
             try {
                 const command = new ConverseCommand({
-                    modelId: 'openai.gpt-oss-120b-1:0',
+                    modelId: 'gpt-oss-120b',
                     messages: [{ role: 'user', content: [{ text: fullPrompt }] }]
                 });
                 const response = await bedrockClient.send(command);
@@ -560,7 +560,7 @@ ${alerts.map(a => `- [${a.severity}] ${a.message}`).join('\n')}`;
             if (bedrockClient) {
                 try {
                     const command = new ConverseCommand({
-                        modelId: 'openai.gpt-oss-120b-1:0',
+                        modelId: 'gpt-oss-120b',
                         messages: [{ role: 'user', content: [{ text: prompt }] }]
                     });
                     const response = await bedrockClient.send(command);
