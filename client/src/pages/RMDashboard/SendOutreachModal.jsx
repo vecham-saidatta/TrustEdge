@@ -19,7 +19,8 @@ export default function SendOutreachModal({ isOpen, customer, onClose, onRefresh
   const fetchOutreach = async (customerId, currentChannel) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/simulate-outreach', {
+      const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/v1', '') : 'http://localhost:5000/api';
+      const response = await fetch(`${baseUrl}/simulate-outreach`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ customerId, channel: currentChannel }),
@@ -43,7 +44,8 @@ export default function SendOutreachModal({ isOpen, customer, onClose, onRefresh
   const handleMarkAccepted = async () => {
     if (!messageData || !messageData.offerId) return;
     try {
-      const response = await fetch(`/api/retention-offers/${messageData.offerId}/respond`, {
+      const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/v1', '') : 'http://localhost:5000/api';
+      const response = await fetch(`${baseUrl}/retention-offers/${messageData.offerId}/respond`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ customerResponse: 'ACCEPTED' }),

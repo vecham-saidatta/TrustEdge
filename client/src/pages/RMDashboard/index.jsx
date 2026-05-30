@@ -25,7 +25,8 @@ export default function RMDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/at-risk-customers?limit=20&minScore=0.45');
+      const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/v1', '') : 'http://localhost:5000/api';
+      const response = await fetch(`${baseUrl}/at-risk-customers?limit=20&minScore=0.45`);
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
