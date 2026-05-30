@@ -539,11 +539,12 @@ export default function SageAssistantPage() {
                             </div>
 
                             {/* Topic selector */}
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                                 {TOPIC_QUICKSTARTS.map(t => (
                                     <button key={t.topic} onClick={() => setTopic(t.topic)} style={{
-                                        padding: '4px 10px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                                        fontSize: '0.7rem', fontWeight: 600, fontFamily: 'inherit',
+                                        flex: '1 1 auto', textAlign: 'center', whiteSpace: 'nowrap',
+                                        padding: '6px 12px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                                        fontSize: '0.75rem', fontWeight: 600, fontFamily: 'inherit',
                                         background: topic === t.topic ? t.color : 'var(--bg-card)',
                                         color: topic === t.topic ? 'white' : 'var(--text-muted)',
                                         transition: 'all 0.2s',
