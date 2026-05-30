@@ -860,11 +860,11 @@ export default function PlaceholderWrapper({ moduleKey, moduleName, children }) 
         onClick={() => setShowDraftUI(true)}
         style={{
           position: 'fixed', bottom: 28, right: 28, zIndex: 90,
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '12px 22px', borderRadius: 'var(--radius-xl)',
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '16px 32px', borderRadius: 'var(--radius-xl)',
           background: '#3b82f6',
           border: 'none',
-          color: '#ffffff', fontSize: '0.85rem', fontWeight: 700,
+          color: '#ffffff', fontSize: '1.05rem', fontWeight: 700,
           cursor: 'pointer', transition: 'all 0.25s ease',
           boxShadow: '0 4px 20px rgba(59, 130, 246, 0.5), 0 0 12px rgba(59, 130, 246, 0.3)',
         }}
@@ -879,7 +879,7 @@ export default function PlaceholderWrapper({ moduleKey, moduleName, children }) 
           e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
-        <Eye size={16} /> Explore Draft UI <ChevronRight size={14} />
+        <Eye size={20} /> Explore Draft UI <ChevronRight size={18} />
       </button>
     </div>
   );
