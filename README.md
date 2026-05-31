@@ -83,15 +83,14 @@ Be honest — evaluators respect honesty:
 
 List team members and their contributions:
 
-[Name 1] — ML model development (Random Forest) and Synthetic data pipeline
-[Name 2] — Backend API, Gen-AI integration (SAGE), and Event Bus architecture
-[Name 3] — React Frontend (Admin Dashboard and Customer Portal) + Visualizations
-[Name 4] — Domain research, architecture design, and documentation
+[Name 1] — ML model development (Random Forest) and Synthetic data pipeline,Domain research
+[Name 2] — Backend API, Gen-AI integration (SAGE), and Event Bus architecture,documentation
+[Name 3] — React Frontend (Admin Dashboard and Customer Portal) + Visualizations,architecture design
 
 ## Contact
 
 For any queries about this submission:
-Team Name: TechBugs!!
-Institute: [Your College Name]
-Email: [Team email]
+Team Name: TechBugs...!!
+Institute: Dayananda Sagar University  
+Email: vecham.saidatta2006@gmail.com
 Hackathon Phase 2 Submission
