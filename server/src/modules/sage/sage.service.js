@@ -7,31 +7,40 @@
  *   - Bedrock API call fails
  */
 
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { BedrockRuntimeClient, ConverseCommand } = require('@aws-sdk/client-bedrock-runtime');
 const prisma = require('../../config/database');
 const ApiError = require('../../utils/apiError');
 const logger = require('../../config/logger');
 
 // ── AI Setup ─────────────────────────────────────────────
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const AWS_BEARER_TOKEN_BEDROCK = process.env.AWS_BEARER_TOKEN_BEDROCK;
 
-let geminiModel = null;
 let bedrockClient = null;
-
 if (AWS_BEARER_TOKEN_BEDROCK) {
-    bedrockClient = new BedrockRuntimeClient({ region: 'us-east-1' });
-    logger.info('🧠 SAGE: AWS Bedrock client initialized (openai.gpt-oss-120b-1:0)');
+    try {
+        // Decode the token which is base64 encoded after the ABSK prefix
+        const encodedStr = AWS_BEARER_TOKEN_BEDROCK.substring(4);
+        const decodedStr = Buffer.from(encodedStr, 'base64').toString('utf8');
+        const [accessKeyId, secretAccessKey] = decodedStr.split(':');
+
+        if (accessKeyId && secretAccessKey) {
+            bedrockClient = new BedrockRuntimeClient({ 
+                region: 'us-east-1',
+                credentials: {
+                    accessKeyId,
+                    secretAccessKey
+                }
+            });
+            logger.info('🧠 SAGE: AWS Bedrock client initialized with token credentials');
+        } else {
+            logger.error('SAGE: Failed to parse Bedrock credentials from token');
+        }
+    } catch (e) {
+        logger.error('SAGE: Invalid Bedrock token format', { error: e.message });
+    }
 }
 
-if (GEMINI_API_KEY) {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    geminiModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    logger.info('🧠 SAGE: Gemini LLM connected (gemini-2.5-flash)');
-}
-
-if (!AWS_BEARER_TOKEN_BEDROCK && !GEMINI_API_KEY) {
+if (!AWS_BEARER_TOKEN_BEDROCK) {
     logger.warn('⚠️ SAGE: No API Keys found. Using rule-based fallback.');
 }
 
@@ -232,7 +241,7 @@ ${text}`;
         if (bedrockClient) {
             try {
                 const command = new ConverseCommand({
-                    modelId: 'gpt-oss-120b',
+                    modelId: 'openai.gpt-oss-120b-1:0',
                     messages: [{ role: 'user', content: [{ text: prompt }] }]
                 });
                 const response = await bedrockClient.send(command);
@@ -241,19 +250,7 @@ ${text}`;
                     return textBlock.text.trim();
                 }
             } catch (bedrockError) {
-                logger.error('SAGE: Bedrock translation failed, attempting Gemini fallback', { error: bedrockError.message });
-            }
-        }
-        
-        if (geminiModel) {
-            try {
-                const result = await geminiModel.generateContent(prompt);
-                const responseText = result.response.text().trim();
-                if (responseText) {
-                    return responseText;
-                }
-            } catch (geminiError) {
-                logger.error('SAGE: Gemini translation failed', { error: geminiError.message });
+                logger.error('SAGE: Bedrock translation failed', { error: bedrockError.message });
             }
         }
         
@@ -270,7 +267,7 @@ ${text}`;
 
 // ── AI Response Generator ────────────────────────────
 const generateAIResponse = async (message, topic, chatHistory, language = 'ENGLISH') => {
-    if (!bedrockClient && !geminiModel) return null; // Fallback signal
+    if (!bedrockClient) return null; // Fallback signal
 
     try {
         const topicInstruction = TOPIC_INSTRUCTIONS[topic] || TOPIC_INSTRUCTIONS.GENERAL;
@@ -295,7 +292,7 @@ const generateAIResponse = async (message, topic, chatHistory, language = 'ENGLI
         if (bedrockClient) {
             try {
                 const command = new ConverseCommand({
-                    modelId: 'gpt-oss-120b',
+                    modelId: 'openai.gpt-oss-120b-1:0',
                     messages: [{ role: 'user', content: [{ text: fullPrompt }] }]
                 });
                 const response = await bedrockClient.send(command);
@@ -307,16 +304,7 @@ const generateAIResponse = async (message, topic, chatHistory, language = 'ENGLI
                     logger.info('SAGE: GPT-OSS-120B response generated', { topic, messageLength: message.length });
                 }
             } catch (bedrockError) {
-                logger.error('SAGE: Bedrock AI response failed, trying Gemini fallback', { error: bedrockError.message });
-            }
-        }
-        
-        if (!responseText && geminiModel) {
-            const result = await geminiModel.generateContent(fullPrompt);
-            responseText = result.response.text();
-            if (responseText) {
-                engine = 'gemini';
-                logger.info('SAGE: Gemini response generated', { topic, messageLength: message.length });
+                logger.error('SAGE: Bedrock AI response failed', { error: bedrockError.message });
             }
         }
 
@@ -433,7 +421,7 @@ const generateResponse = async (message, topic, chatHistory = [], language = 'EN
     // Fallback to rule-based
     const ruleResponse = generateRuleBasedResponse(message, topic);
     
-    // If language is not English, translate the rule-based response using Gemini if available
+    // If language is not English, translate the rule-based response using Bedrock if available
     if (language && language !== 'ENGLISH') {
         try {
             const translatedRuleResponse = await translateText(ruleResponse, language);
@@ -551,7 +539,7 @@ Active Alerts (${alerts.length}):
 ${alerts.map(a => `- [${a.severity}] ${a.message}`).join('\n')}`;
 
     // Try AI for personalized suggestions
-    if (bedrockClient || geminiModel) {
+    if (bedrockClient) {
         try {
             const prompt = SUGGESTIONS_PROMPT.replace('{USER_DATA}', userData);
             let responseText = '';
@@ -560,7 +548,7 @@ ${alerts.map(a => `- [${a.severity}] ${a.message}`).join('\n')}`;
             if (bedrockClient) {
                 try {
                     const command = new ConverseCommand({
-                        modelId: 'gpt-oss-120b',
+                        modelId: 'openai.gpt-oss-120b-1:0',
                         messages: [{ role: 'user', content: [{ text: prompt }] }]
                     });
                     const response = await bedrockClient.send(command);
@@ -568,13 +556,9 @@ ${alerts.map(a => `- [${a.severity}] ${a.message}`).join('\n')}`;
                     const textBlock = response.output.message.content.find(c => c.text !== undefined);
                     responseText = textBlock ? textBlock.text.trim() : '';
                 } catch (bedrockError) {
-                    logger.error('SAGE: Bedrock suggestions failed, trying Gemini fallback', { error: bedrockError.message });
+                    logger.error('SAGE: Bedrock suggestions failed', { error: bedrockError.message });
                     bedrockFailed = true;
                 }
-            }
-            if ((!bedrockClient || bedrockFailed) && geminiModel) {
-                const result = await geminiModel.generateContent(prompt);
-                responseText = result.response.text().trim();
             }
 
             // Parse JSON from response (handle potential markdown wrapping)
@@ -584,7 +568,7 @@ ${alerts.map(a => `- [${a.severity}] ${a.message}`).join('\n')}`;
             }
 
             const suggestions = JSON.parse(jsonStr);
-            const engineName = bedrockClient && !bedrockFailed ? 'bedrock' : 'gemini';
+            const engineName = 'bedrock';
             logger.info(`SAGE: Smart suggestions generated via ${engineName}`, { userId, count: suggestions.length });
             return { suggestions, engine: engineName };
         } catch (error) {
