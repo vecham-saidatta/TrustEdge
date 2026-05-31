@@ -83,9 +83,9 @@ Be honest — evaluators respect honesty:
 
 List team members and their contributions:
 
-[Name 1] — ML model development (Random Forest) and Synthetic data pipeline,Domain research
-[Name 2] — Backend API, Gen-AI integration (SAGE), and Event Bus architecture,documentation
-[Name 3] — React Frontend (Admin Dashboard and Customer Portal) + Visualizations,architecture design
+V S Saidatta — ML model development (Random Forest) and Synthetic data pipeline,Domain research
+P Lakshmi Sahasra — Backend API, Gen-AI integration (SAGE), and Event Bus architecture,documentation
+Likitha K — React Frontend (Admin Dashboard and Customer Portal) + Visualizations,architecture design
 
 ## Contact
 
