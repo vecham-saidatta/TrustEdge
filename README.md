@@ -1,4 +1,4 @@
-# TrustEdge — Predictive Customer Outreach for Connection and Retention
+# TrustEdge — Human Intelligence Banking Platform 
 
 ## Problem Statement
 
@@ -17,7 +17,7 @@ If no live deployment: 'Run locally using instructions below.'
 - React 19 + Vite 7 (Frontend Dashboard & Customer Portal)
 - Prisma ORM + PostgreSQL / SQLite (Database)
 - Scikit-learn (Random Forest ML model)
-- AWS Bedrock (GPT-OSS-120B) & Google Gemini 2.5 Flash (Gen-AI engines)
+- AWS Bedrock (GPT-OSS-120B) 
 - Pandas, NumPy (Data processing)
 - Recharts (Visualisations)
 - Synthetic data generated with Python Faker library
@@ -90,7 +90,7 @@ List team members and their contributions:
 ## Contact
 
 For any queries about this submission:
-Team Name: TechBugs...!!
-Institute: Dayananda Sagar University  
-Email: vecham.saidatta2006@gmail.com
+- Team Name: TechBugs...!!
+- Institute: Dayananda Sagar University  
+- Email: vecham.saidatta2006@gmail.com
 Hackathon Phase 2 Submission
