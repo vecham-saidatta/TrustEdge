@@ -9,6 +9,11 @@ function useTypewriter(text, speed = 18, enabled = true) {
     const [done, setDone] = useState(() => (!enabled || !text));
     const indexRef = useRef(0);
     const timerRef = useRef(null);
+    const textRef = useRef(text); // always holds latest text — fixes stale closure in skip
+
+    useEffect(() => {
+        textRef.current = text;
+    }, [text]);
 
     useEffect(() => {
         if (!enabled || !text) {
@@ -40,9 +45,9 @@ function useTypewriter(text, speed = 18, enabled = true) {
 
     const skip = useCallback(() => {
         clearInterval(timerRef.current);
-        setDisplayed(text);
+        setDisplayed(textRef.current); // use ref — never stale
         setDone(true);
-    }, [text]);
+    }, []); // no deps needed — ref always has latest value
 
     return { displayed, done, skip };
 }
