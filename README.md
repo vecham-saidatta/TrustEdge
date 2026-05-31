@@ -90,7 +90,9 @@ List team members and their contributions:
 ## Contact
 
 For any queries about this submission:
+
 - Team Name: TechBugs...!!
 - Institute: Dayananda Sagar University  
 - Email: vecham.saidatta2006@gmail.com
+
 Hackathon Phase 2 Submission
